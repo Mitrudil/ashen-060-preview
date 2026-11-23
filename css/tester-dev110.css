@@ -1,0 +1,8 @@
+/* Offline developer test panel. */
+.ashen-tester110{margin-bottom:18px;border:1px solid #6f9a93;background:linear-gradient(145deg,rgba(19,53,61,.55),rgba(23,27,32,.35))}
+.ashen-tester110>summary{font-size:1.05rem;font-weight:750;cursor:pointer;padding:4px}
+.tester110-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin:14px 0}
+.tester110-form label{display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.ashen-tester110 .actions{display:flex;gap:10px;flex-wrap:wrap}
+.tester110-preview{margin-top:15px;padding:12px;border:1px solid #36565e;border-radius:10px}
+.tester110-set{padding:5px 0}

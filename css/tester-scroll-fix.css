@@ -1,0 +1,9 @@
+/* ASHEN Tester offline 108 — przewijanie ekranu postaci i gry.
+   Nie odblokowujemy scrolla podczas otwartego dialogu walki. */
+html { height: auto; min-height: 100%; overflow-x: clip; overflow-y: auto; }
+body { height: auto; min-height: 100vh; overflow-x: clip; overflow-y: auto; }
+#app { min-height: 100vh; width: 100%; }
+/* Ochrona gdy pozostała klasa po zamkniętym raporcie. */
+body.arena-report-modal-open:not(:has(.arena-report-overlay, .ashen-online-report-overlay, .ashen-expedition-report-overlay)) { overflow-y: auto; }
+.creation-panel, .ashen-character-shell, .dev-profile-grid { height: auto; max-height: none; }
+@media(max-width:760px){html,body{overscroll-behavior-y:auto;touch-action:pan-y pan-x;}}

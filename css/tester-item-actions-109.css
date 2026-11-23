@@ -1,0 +1,8 @@
+/* ASHEN 0.6 Tester 109 — działania wyraźnie ponad porównaniem */
+.ashen-item-modal .ashen-item-actions-top{margin:18px 0 16px;padding:14px;border:1px solid var(--border,#566);border-radius:12px;background:rgba(53,84,92,.14)}
+.ashen-item-modal .ashen-item-actions-top h3{margin:0 0 11px;font-size:1.05rem}
+.ashen-item-modal .ashen-item-actions-top .actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.ashen-item-modal .ashen-item-actions-top button{white-space:normal}
+.ashen-item-modal .ashen-item-modal-footer{margin-top:16px;justify-content:flex-end}
+.ashen-item-modal .ashen-compare-targets{padding:4px 0}
+.ashen-item-modal .ashen-compare-targets button{font-weight:600}
