@@ -20,6 +20,6 @@ try {
    window.ASHEN_PREVIEW_STORAGE.setItem(ACTIVE,TEST);
    window.ASHEN_TESTER_ACTIVE_ID=TEST;
  }
- window.ASHEN_PREVIEW_STORAGE.setItem('ashen-active-page','character');
+ // Zachowaj ostatnio otwartą zakładkę. Pierwsze uruchomienie i tak startuje na Postaci.
 }catch(err){window.ASHEN_TESTER_BOOT_ERROR=String(err.message||err);}
 })();
