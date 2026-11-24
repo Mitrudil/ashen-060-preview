@@ -748,7 +748,7 @@ function pickLoot(loc,exploration=null,forcedCount=null){
   // Ruiny: drugi 10%, trzeci 1%; szpital: 14% / 2%; posterunek: 18% / 3%.
   const odds=({ruins:[.10,.01],hospital:[.14,.02],outpost:[.18,.03]})[loc.id]||[.10,.01];
   const roll=Math.random(),count=roll<odds[1]?3:roll<odds[0]?2:1;
- const all=COMMON_EXPEDITION_DROPS.slice();
+ const all=window.Ashen060ExpeditionPool152.adapt(COMMON_EXPEDITION_DROPS,state.level,state.attrs,window.Ashen060BaseRules124);
  // Artefakty są rzadkimi znaleziskami, niezależnymi od zwykłej puli akcesoriów.
  if(loc.id==='hospital')for(const id of ['ash_needle','ash_eye','ash_dust'])all.push({id,w:0.018});
  if(loc.id==='outpost')for(const id of artifactItems.map(x=>x.id))all.push({id,w:0.034});
