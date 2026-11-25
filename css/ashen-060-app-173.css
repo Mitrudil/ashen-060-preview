@@ -29,3 +29,87 @@
 .a180-art-bag-item{display:flex;gap:9px;align-items:center;padding:10px;border:1px solid #46514b;background:#142022;border-radius:7px}
 .a180-art-bag-item strong{display:block;color:#e4c18a;font-size:13px}.a180-art-bag-item small{display:block;color:#a4b5b0;font-size:11px;margin-top:4px}
 .a180-art-glyph{width:36px;height:36px;display:grid;place-items:center;flex:none;border:1px solid #aa8248;border-radius:7px;color:#f1c37e;background:#30291e}
+
+
+/* ASHEN — odzyskiwanie pełnej oprawy; brak drugiego silnika gry. */
+.a191-character-hero{background:linear-gradient(90deg,#101819e8,#161d1dd8),url('../assets/ui/rusted-orange.webp') center/cover}
+.a191-bunker-hero{background:linear-gradient(90deg,#101819ee,#151c1dc7),url('../assets/bunker/rooms/storage-level1.webp') center/cover}
+.a191-survivor-stage{min-width:0;position:relative;background:radial-gradient(ellipse at 50% 40%,#58665c,#12191b 76%);border:1px solid #667365;border-radius:9px;overflow:hidden}
+.a191-survivor-stage .a173-figure{background:none;border:0;position:relative;z-index:2}
+.a191-survivor-shadow{position:absolute;left:5%;right:5%;bottom:8px;height:26px;border-radius:50%;background:#0007;filter:blur(8px)}
+.a191-art-icon{background:radial-gradient(circle at 50% 22%,#3b4c48,#162025);padding:3px;overflow:hidden}
+.a191-item-picture{width:100%;height:100%;object-fit:contain;display:block}
+.a191-empty-slot{font-size:25px;color:#9da8a0}
+.a191-room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.a191-room{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.7fr);background:#121d20;border:1px solid #43524e;border-radius:9px;overflow:hidden}
+.a191-room>img{width:100%;height:200px;object-fit:cover}.a191-room>div{padding:15px;display:flex;flex-direction:column;gap:9px;justify-content:center}
+.a191-room strong,.a191-roster strong{font:700 19px Georgia,serif;color:#e6c083}.a191-room span,.a191-roster small{font-size:11px;color:#d4aa70}.a191-room p{font-size:13px;color:#b2c2b9}
+.a191-roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.a191-roster{padding:9px;display:flex;flex-direction:column;gap:9px;background:#162225;border:1px solid #536054;border-radius:8px}
+.a191-roster img{width:100%;height:186px;object-fit:cover;border-radius:6px}.a191-roster strong{padding:0 5px}.a191-roster small{padding:0 5px 6px}
+.a173-side nav button{min-height:40px}
+@media(max-width:1000px){.a191-room-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.a191-room{grid-template-columns:1fr}.a191-room>img{height:190px}.a191-room>div{padding:12px}.a191-roster-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.a191-roster img{height:140px}}
+
+/* ASHEN unified UI recovery — visual armory, no new persistence state. */
+.a192-equip-hero{background:linear-gradient(95deg,#101717ed,#152022cc),url('../assets/ui/rusted-orange.webp') center/cover}
+.a192-armory{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr);gap:15px;margin-bottom:18px;align-items:start}
+.a192-equip-panel h2,.a192-bag-panel h2{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.a192-equip-panel h2 small,.a192-bag-panel h2 small{font:400 11px system-ui;color:#a8b8b0}
+.a192-loadout{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,.94fr) minmax(0,1fr);gap:9px;align-items:stretch}
+.a192-slot-column{display:flex;flex-direction:column;gap:8px}
+.a192-equip-slot{min-height:86px;position:relative;display:grid;grid-template-columns:46px minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:7px;align-items:center;padding:8px 7px;border:1px solid #536159;border-radius:8px;background:linear-gradient(135deg,#1a2a2b,#111a1d);overflow:hidden}
+.a192-equip-slot.filled{border-left:3px solid #ab8754}.a192-equip-slot.vacant{opacity:.8}
+.a192-equip-label{font-size:10px;line-height:1.25;color:#c0b49d;grid-column:1/3;padding-right:16px}
+.a192-equip-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:5px;border:1px solid #59615a;background:#253330;overflow:hidden}
+.a192-equip-name{font-size:11px;color:#e7d5b7;overflow-wrap:anywhere;line-height:1.3}
+.a192-unequip{position:absolute;right:5px;top:5px;width:23px;height:23px;border-radius:4px;border:1px solid #71504b;background:#352625;color:#f3b6a4;cursor:pointer;font-size:16px}
+.a192-figure-stage{position:relative;min-width:0;min-height:560px;display:flex;flex-direction:column;align-items:center;justify-content:end;background:radial-gradient(ellipse at 50% 35%,#52645b,#111b20 75%);border:1px solid #627166;border-radius:8px;overflow:hidden}
+.a192-figure-stage img{max-width:100%;width:100%;height:510px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 15px #000b)}
+.a192-figure-stage p{width:100%;padding:8px;text-align:center;margin:0;color:#e9c28b;background:#101a1cdd;font-size:12px}
+.a192-armory-summary{margin-top:14px}
+.a192-bag-tabs{display:flex;gap:6px;flex-wrap:wrap}.a192-bag-tabs button.selected{background:#8c6940!important;border-color:#e4c187!important;color:#fff1cf!important}
+.a192-bag-hint{font-size:11px;color:#a9b6b2;margin:10px 0}
+.a192-bag-scroll{max-height:800px;overflow-y:auto;scrollbar-color:#53675c #142023}
+.a192-bag-item{padding:12px 6px;flex-wrap:wrap;border-left:3px solid #777e78;margin-bottom:5px;background:#1a2425;border-radius:4px}
+.a192-rarity-1{border-left-color:#67a4b7!important}.a192-rarity-2{border-left-color:#a384e6!important}.a192-rarity-3{border-left-color:#e6b962!important}.a192-rarity-4{border-left-color:#e68f77!important}
+.a192-quality{color:#e9d7b1}
+.a192-battle-report{border-color:#645842}.a192-report-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.a192-battle-result{font-weight:800;letter-spacing:.08em;font-size:12px;padding:7px 11px;border:1px solid;border-radius:5px}
+.a192-battle-result.victory{color:#ade5b5;border-color:#48764d;background:#1b3825}.a192-battle-result.defeat{color:#f0aaa0;border-color:#824842;background:#3a2423}
+.a192-battle-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.a192-battle-summary>div{border:1px solid #475650;background:#1a2727;padding:10px;border-radius:6px;min-width:0}
+.a192-battle-summary span,.a192-battle-summary strong{display:block;overflow-wrap:anywhere}.a192-battle-summary span{font-size:11px;color:#a4b3ad}.a192-battle-summary strong{font-size:17px;color:#e7d0aa;margin-top:5px}
+.a192-round-details summary{cursor:pointer;color:#e2bd85;margin:12px 0}.a192-round-grid{display:grid;gap:7px;max-height:420px;overflow:auto}
+.a192-combat-round{padding:10px 12px;border:1px solid #41514c;border-radius:6px;background:#182426;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.a192-combat-round>div:first-child{min-width:80px}.a192-combat-round b{font-size:12px;color:#d5c09f}.a192-combat-round>div:first-child span{display:block;font-size:11px;color:#a2b9aa;margin-top:4px}
+.a192-round-numbers{display:flex;gap:9px;flex-wrap:wrap;font-size:11px;color:#a8b3b1}.a192-round-numbers .damage{color:#aee1b8}.a192-round-numbers .taken{color:#e9a59c}
+@media(max-width:1260px){.a192-armory{grid-template-columns:1fr}.a192-bag-scroll{max-height:570px}}
+@media(max-width:760px){.a192-loadout{grid-template-columns:repeat(2,minmax(0,1fr))}.a192-figure-stage{grid-column:1/3;grid-row:1;min-height:280px}.a192-figure-stage img{height:260px}.a192-slot-column{grid-row:2}.a192-battle-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.a192-equip-slot{grid-template-columns:40px minmax(0,1fr);padding:5px;min-height:80px}.a192-equip-icon{width:38px;height:38px}.a192-equip-name{font-size:10px}.a192-battle-summary{grid-template-columns:1fr}}
+
+/* Recovered mission presentation, same canonical combat & persistent history. */
+.a193-mission-hero{background:linear-gradient(90deg,#111d20f2,#13201bdc),url('../assets/missions/ruins.webp') center 43%/cover;border-color:#635841}
+.a193-expedition-overview{margin-bottom:16px}
+.a193-expedition-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.a193-expedition-stats>div{border:1px solid #4b5e56;border-radius:6px;background:#172628;padding:13px 10px}
+.a193-expedition-stats span,.a193-expedition-stats strong{display:block}.a193-expedition-stats span{font-size:11px;color:#abc0b6}.a193-expedition-stats strong{font-family:Georgia,serif;font-size:27px;color:#e8c58f;margin-top:5px}
+.a193-history-note{color:#9faea6;font-size:11px;margin-top:10px}
+.a193-mission-grid{align-items:stretch}
+.a193-mission-card{display:flex;flex-direction:column;min-width:0;border-color:#5f695c;background:linear-gradient(160deg,#1b2929,#101a1d)}
+.a193-mission-image{position:relative;min-height:170px;overflow:hidden}
+.a193-mission-image img{display:block;width:100%;height:180px;object-fit:cover;filter:contrast(1.06) saturate(.88)}
+.a193-location-tag{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,#091213f7,#09121366);color:#f0cd94;padding:23px 13px 10px;font-family:Georgia,serif;font-size:19px;font-weight:bold}
+.a193-mission-card .a173-loc-body{display:flex;flex-direction:column;flex:1;padding:14px}
+.a193-mission-card .a173-loc-body>p:first-child{min-height:42px}
+.a193-enemy{border-top:1px solid #47574f;padding-top:11px;margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.a193-enemy span{color:#a0b2a8;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.a193-enemy strong{font-size:14px;color:#eac6a3}
+.a193-enemy-details,.a193-location-history{display:flex;flex-wrap:wrap;gap:7px 14px;font-size:11px;color:#9eb5ab;margin-top:11px}
+.a193-enemy-details b,.a193-location-history b{color:#dfc79c}
+.a193-location-history{padding-top:11px;border-top:1px solid #455249}
+.a193-last-outcome{font-size:11px!important;min-height:0!important;margin:10px 0!important;color:#9eaeb0!important}
+.a193-last-outcome strong{display:inline!important;color:#e0c18c!important;font-size:11px!important}
+.a193-depart{width:100%;margin-top:auto;min-height:39px}
+@media(max-width:1100px){.a193-mission-card{display:flex;flex-direction:column}.a193-mission-card .a193-mission-image img{width:100%;height:170px}.a193-mission-image{min-height:0}}
+@media(max-width:650px){.a193-expedition-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.a193-location-tag{font-size:17px}}
