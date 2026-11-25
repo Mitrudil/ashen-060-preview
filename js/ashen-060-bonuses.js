@@ -64,8 +64,8 @@ function autoSetBonuses(items,catalog){
   const count=matches.length; if(!count)continue;
   requireCondition(count<=(def.kind==='Akcesoria'?3:6),'Za dużo części zestawu');
   const qualitySum=matches.reduce((sum,[,item])=>sum+qualityIndex(item),0);
-  const activeX=count>=3,active4=def.kind==='Odzież'&&count>=4,activeY=def.kind==='Akcesoria'?count===3:count>=5,active6=def.kind==='Odzież'&&count===6;
-  const detail={family:def.name,kind:def.kind,count,requiredX:3,requiredY:def.kind==='Akcesoria'?3:5,qualityScore:qualitySum,qualityMax:count*4,averageQuality:count?Math.round(qualitySum*100/count)/100:0,activeX,active4,activeY,active6};
+  const activeX=count>=3,activeY=def.kind==='Akcesoria'?count===3:count>=5;
+  const detail={family:def.name,kind:def.kind,count,requiredX:3,requiredY:def.kind==='Akcesoria'?3:5,qualityScore:qualitySum,qualityMax:count*4,averageQuality:count?Math.round(qualitySum*100/count)/100:0,activeX,activeY};
   if(activeX){const x=scaleSetEffect(def.x,qualitySum,count);mods.push(mod('set_x',def.x.key,x.value,{activation_condition:'auto-v20;quality-scaled;preview-only',order:50}));detail.x=x;}
   if(activeY){const y=scaleSetEffect(def.y,qualitySum,count);mods.push(mod('set_y',def.y.key,y.value,{activation_condition:'auto-v20;quality-scaled;preview-only',order:60}));detail.y=y;signals.push({type:'set_z',family:def.name,name:def.z_name_unchanged,requires_combat_event:true});}
   if(!activeX)signals.push({type:'set_incomplete',family:def.name,count,kind:def.kind});
@@ -87,7 +87,7 @@ for(const [slot,item] of Object.entries(items)){
 }
 // Rezonsans aktywuje się raz po trzech artefaktach jednej rodziny, niezależnie od 4. i dalszych.
 for(const [family,count] of Object.entries(counts))if(count>=3)signals.push({type:'resonance',family,count,active:true,bonuses_pending_balance:true});
-if(snapshot.setPolicy==='auto-v20'||snapshot.setPolicy==='auto-v113'){
+if(snapshot.setPolicy==='auto-v20'){
  requireCondition(!snapshot.activeSets?.length,'Nie wolno mieszać automatycznych i ręcznych progów X/Y');
  const result=autoSetBonuses(items,catalog);mods.push(...result.modifiers);signals.push(...result.signals);setDetails=result.details;
 }else{
