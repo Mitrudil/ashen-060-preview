@@ -1470,3 +1470,10 @@ body.arena-report-modal-open{overflow:hidden}
 
 /* ASHEN 0.6 — komunikat o etapie instalacji */
 .ashen-build-tag{display:inline-block;margin-left:.45rem;padding:.1rem .45rem;border:1px solid #856d40;border-radius:999px;color:#e9c88d;font-size:.76rem;font-weight:700;letter-spacing:.01em;vertical-align:middle;}
+
+/* ASHEN 208 SCROLL FIX */
+html { overflow-x: hidden; overflow-y: auto !important; height: auto !important; }
+body { overflow-x: hidden; overflow-y: auto !important; height: auto !important; min-height: 100vh; }
+#app, .shell, .ashen-wide-shell, .ashen-premium-shell, .layout, .main { height: auto !important; max-height: none !important; min-height: 0; }
+/* Preserve scrolling inside actual open dialogs. */
+.arena-report-dialog-scroll, .ashen-cloud-dialog, .ashen-player-modal-content { overflow-y: auto; }
