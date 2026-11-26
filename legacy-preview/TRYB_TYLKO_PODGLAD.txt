@@ -1,0 +1,1 @@
+ASHEN 208: osobny podglad starego UI, lokalne dane techniczne. Brak polaczenia z Supabase. Nie loguj sie ani nie importuj prywatnych danych.

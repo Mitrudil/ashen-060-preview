@@ -1,0 +1,53 @@
+/* ASHEN 0.4.5.2 — zwijane, kompaktowe laboratorium Starć */
+.combat-lab{margin:12px auto 16px;padding:0;border:1px solid rgba(190,166,108,.35);border-radius:10px;max-width:1100px;background:rgba(24,27,28,.7)}
+.combat-lab>summary{padding:13px 16px;cursor:pointer;font-weight:700;color:#dfc99b;font-size:.95rem}
+.combat-lab-content{padding:0 16px 15px;font-size:.89rem}
+.combat-lab-content>p{line-height:1.45}
+.combat-lab-config{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:12px 0}
+.combat-lab-config label{display:flex;flex-direction:column;gap:5px;flex:1 1 170px;font-weight:600}
+.combat-lab-config select{width:100%;max-width:100%;padding:9px;border:1px solid #665e4a;border-radius:6px;background:#1b2021;color:#f1eee4}
+.combat-lab-config button{flex:0 1 auto;min-height:38px}
+.combat-lab-outcome{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0 8px}
+.combat-lab-outcome small{color:#b9b0a0}
+.combat-lab-table-wrap{overflow-x:auto}
+.combat-lab-table-wrap table{width:100%;border-collapse:collapse;text-align:right;font-size:.88rem}
+.combat-lab-table-wrap th,.combat-lab-table-wrap td{padding:9px;border-bottom:1px solid #544f43}
+.combat-lab-table-wrap tr>*:first-child{text-align:left}
+.combat-lab-table-wrap td:nth-child(2){color:#c4dfb5;font-weight:700}
+@media(max-width:650px){.combat-lab-config button{width:100%}.combat-lab-content{padding:0 11px 12px}.combat-lab-table-wrap table{font-size:.8rem}}
+
+.combat-lab-vitals{display:flex;flex-wrap:wrap;gap:8px 20px;margin:10px 0;padding:10px 12px;background:rgba(190,166,108,.08);border:1px solid rgba(190,166,108,.2);border-radius:7px;font-size:.88rem}
+.combat-lab-vitals span{flex:1 1 210px}
+
+/* v0.4.6.1 model broni */
+.weapon-lab{border-color:rgba(153,191,200,.5)}
+.weapon-lab>summary{color:#b9dce2}
+.weapon-lab .weapon-lab-dual{flex:1 1 210px;display:flex;flex-direction:row;align-items:center;gap:8px;min-height:40px}
+.weapon-lab .weapon-lab-dual input{width:18px;height:18px}
+.weapon-lab details>summary{padding:11px 2px;cursor:pointer;color:#cfbd97}
+.weapon-lab table td{font-variant-numeric:tabular-nums}
+
+/* v0.4.6.2: czytelne scenariusze i zapamiętywanie otwartego panelu */
+.weapon-lab-presets{border:1px solid rgba(153,191,200,.24);border-radius:8px;padding:10px;margin:10px 0;background:rgba(153,191,200,.05)}
+.weapon-lab-presets strong{font-size:.87rem;display:block;margin-bottom:9px}
+.weapon-lab-preset-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}
+.weapon-lab-preset-buttons button{background:#263436;color:#e0edf0;border:1px solid #546e72;border-radius:6px;padding:10px 6px;cursor:pointer;font-size:.85rem}
+.weapon-lab-preset-buttons button:hover{border-color:#a6ced4;background:#31484b}
+.weapon-lab-presets small{color:#c4c4bc;line-height:1.45;display:block}
+@media(max-width:650px){.weapon-lab-preset-buttons{grid-template-columns:1fr}}
+
+/* v0.4.6.3 — porównanie równowagi, poziome przewijanie na telefonach */
+.weapon-balance-panel{margin:16px 0 12px;padding:14px;border:1px solid #587275;border-radius:9px;background:rgba(74,108,112,.1)}
+.weapon-balance-panel h4{margin:0 0 8px;color:#b9dce2}
+.weapon-balance-panel>button{margin:8px 0 3px}
+.weapon-balance-summary{margin:12px 0}
+.weapon-balance-table{min-width:700px}
+.weapon-balance-table th small{display:block;opacity:.65;font-size:.72em}
+.weapon-balance-table td{white-space:nowrap}
+.weapon-balance-table tbody tr:hover{background:rgba(153,191,200,.08)}
+
+/* v0.4.6.4 — test klas i etapów rozwoju */
+.weapon-kit-panel{border-color:rgba(175,159,100,.5)}
+.weapon-kit-stage{margin:14px 0;padding-top:8px;border-top:1px solid #536268}
+.weapon-kit-stage h5{color:#e1d29a;font-size:.95rem;margin:3px 0 9px}
+.weapon-kit-warning{padding:7px 10px;border-left:3px solid #bda25e;background:rgba(189,162,94,.12);font-size:.85rem}
