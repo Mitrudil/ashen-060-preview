@@ -3439,6 +3439,61 @@ function zLabRestore(){
  state.inventory=b.inventory;state.equip=b.equip;delete state.labSetBackup;
  message='Przywrócono ekwipunek Testera sprzed eksperymentu.';save();render();
 }
+
+// ASHEN 222 — dziesięć zestawów wyposażenia w obrębie jednej postaci.
+// Zapisywane UID oznacza konkretny egzemplarz, nie jego nazwę ani typ.
+const EQUIPMENT_PRESET_COUNT=10;
+function equipmentPresets(){
+ if(!Array.isArray(state.equipmentPresets))state.equipmentPresets=[];
+ return state.equipmentPresets;
+}
+function equipmentPresetPanel(){
+ const slots=equipmentPresets();
+ return `<section class="panel section ashen-presets-panel"><h3>⚔ Zapisane zestawy ekwipunku</h3>
+ <p class="small muted">Masz 10 zestawów przypisanych do tej postaci. Zapisujesz aktualnie założone przedmioty; po zmianie wyposażenia możesz przywrócić cały zestaw jednym kliknięciem. Przedmioty pozostają we wspólnym plecaku. Podczas wyprawy zmiana wyposażenia jest zablokowana.</p>
+ <div class="ashen-presets-grid">${Array.from({length:EQUIPMENT_PRESET_COUNT},(_,i)=>{
+ const preset=slots[i],name=preset?.name||`Zestaw ${i+1}`;
+ const ids=preset?.equip?Object.values(preset.equip).filter(Boolean):[];
+ const missing=ids.filter(uid=>!instance(uid)).length;
+ return `<div class="ashen-preset-entry"><div class="row wrap"><strong>${escape(name)}</strong><span class="tag">${preset?`${ids.length} przedmiotów`:'Pusty'}</span></div>
+ ${missing?`<p class="small bad">Brakuje ${missing} zapisanych przedmiotów — wczytanie niedostępne.</p>`:''}
+ <div class="actions"><button data-preset-save="${i}" ${state.mission?'disabled':''}>${preset?'Nadpisz':'Zapisz obecny'}</button>
+ <button class="primary" data-preset-load="${i}" ${!preset||missing||state.mission?'disabled':''}>Załóż</button>
+ <button data-preset-clear="${i}" ${!preset?'disabled':''}>Usuń</button></div></div>`;
+ }).join('')}</div></section>`;
+}
+function equipmentPresetSave(i){
+ if(state.mission)throw Error('Nie możesz zmieniać ekwipunku podczas wyprawy.');
+ const slots=equipmentPresets(),old=slots[i];
+ const name=prompt('Nazwa zestawu (maks. 32 znaki):',old?.name||`Zestaw ${i+1}`);
+ if(name===null)return;
+ const clean=name.trim();if(!clean||clean.length>32)throw Error('Nazwa zestawu musi mieć od 1 do 32 znaków.');
+ if(old&&!confirm(`Nadpisać zapisany zestaw „${old.name}”?`))return;
+ const equip={};for(const slot of Object.keys(slotLabels))equip[slot]=state.equip[slot]||null;
+ slots[i]={name:clean,equip};message=`Zapisano zestaw: ${clean}.`;save();render();
+}
+function equipmentPresetLoad(i){
+ if(state.mission)throw Error('Nie możesz zmieniać ekwipunku podczas wyprawy.');
+ const preset=equipmentPresets()[i];if(!preset||!preset.equip)throw Error('Ten zestaw jest pusty.');
+ const next=emptyEquipment(),used=new Set();
+ for(const slot of Object.keys(next)){
+  const uid=preset.equip[slot];if(!uid)continue;
+  const inst=instance(uid);
+  if(!inst)throw Error('W plecaku brakuje przedmiotu z zestawu. Nie zmieniono wyposażenia.');
+  if(used.has(uid)||!itemEquipSlots(inst).includes(slot))throw Error('Zapisany zestaw zawiera niezgodne lub powtórzone przedmioty.');
+  used.add(uid);next[slot]=uid;
+ }
+ if(next.left&&next.right&&def(instance(next.right))?.slot==='hand2')throw Error('Nieprawidłowy zestaw: broń dwuręczna blokuje lewą rękę.');
+ const previous=state.equip;
+ try{state.equip=next;attrs();heroDefense();inventoryCombatSummary();save();message=`Założono zestaw: ${preset.name}.`;render()}
+ catch(err){state.equip=previous;throw err;}
+}
+function equipmentPresetClear(i){
+ const slots=equipmentPresets(),preset=slots[i];if(!preset)return;
+ if(!confirm(`Usunąć zapis „${preset.name}”? Przedmioty pozostaną w plecaku.`))return;
+ slots[i]=null;message='Usunięto zapis zestawu.';save();render();
+}
+
 function inventory(){
  const categories=[['all','▣ Wszystko','all'],['sockets','◇ Z gniazdami','socketed'],['weapons','⚔ Broń','weapons-all'],['clothing','⬡ Odzież i pancerz','clothing-all'],['accessories','◈ Akcesoria','accessories-all'],['artifacts','✧ Artefakty','artifacts-all']];
  const filtersByGroup={all:[],sockets:[],weapons:[['weapons-all','Wszystkie bronie'],...Object.entries(WEAPON_CATEGORIES).map(([id,v])=>[id,v.name])],clothing:[['clothing-all','Cała odzież'],['shirt','Koszulki'],['pants','Spodnie'],['boots','Buty'],['outer','Kurtki / pancerze'],['head','Nakrycia głowy'],['hands','Rękawice / karwasze']],accessories:[['accessories-all','Wszystkie akcesoria']],artifacts:[['artifacts-all','Wszystkie artefakty']]};
@@ -3454,7 +3509,7 @@ function inventory(){
  <div class="bulk-summary">Wartość zaznaczonych: <strong>${bulkSum.credits.toLocaleString('pl-PL')} kredytów</strong><br>Materiały z rozłożenia: <strong>${selectedForBulk.length?salvageLabel(bulkSum.mats):'—'}</strong></div>
  <div class="actions"><button class="primary" data-action="bulk-sell" ${selectedForBulk.length?'':'disabled'}>Sprzedaj zaznaczone (${selectedForBulk.length})</button><button data-action="bulk-salvage" ${selectedForBulk.length?'':'disabled'}>Rozłóż zaznaczone (${selectedForBulk.length})</button></div>
  <div class="bulk-hint">Założone i zabezpieczone przedmioty nie mogą zostać zaznaczone. Potwierdzenie pokaże łączną nagrodę. Zaznaczenie nie jest zapisywane między uruchomieniami gry.</div></div>`;
- return section('Ekwipunek',`${zLabPanel()}
+ return section('Ekwipunek',`${equipmentPresetPanel()}${zLabPanel()}
  <div class="small muted" style="margin:8px 0 14px">Przedmioty z nowych Wypraw trafiają od razu do ekwipunku. Zakładasz je standardowym przyciskiem „Załóż”. ${Object.values(state.equip).some(uid=>instance(uid)?.qualitySchema==='ashen-v06')?'Serwerowe PvP wymaga jeszcze aktualizacji obsługi nowych statystyk; zapis postaci w chmurze pozostaje dostępny.':''}</div>
  <div class="inventory-premium-intro">
    <div class="inventory-premium-copyblock">
@@ -3902,6 +3957,14 @@ if(b.dataset.action==='bulk-sell'){disposeBulk('sell');return}
 if(b.dataset.action==='bulk-salvage'){disposeBulk('salvage');return}
 if(b.dataset.sale){disposeItem(b.dataset.sale,'sell');return}
 if(b.dataset.salvage){disposeItem(b.dataset.salvage,'salvage');return}
+if(b.hasAttribute('data-preset-save')||b.hasAttribute('data-preset-load')||b.hasAttribute('data-preset-clear')){
+ try{
+  const action=b.hasAttribute('data-preset-save')?'save':b.hasAttribute('data-preset-load')?'load':'clear';
+  const i=Number(b.getAttribute('data-preset-'+action));
+  if(!Number.isInteger(i)||i<0||i>=EQUIPMENT_PRESET_COUNT)throw Error('Nieprawidłowy numer zestawu.');
+  if(action==='save')equipmentPresetSave(i);else if(action==='load')equipmentPresetLoad(i);else equipmentPresetClear(i);
+ }catch(err){message=err.message;render()}return;
+}
 if(b.dataset.invGroup){const groups={all:'all',sockets:'socketed',weapons:'weapons-all',clothing:'clothing-all',accessories:'accessories-all',artifacts:'artifacts-all'};if(Object.prototype.hasOwnProperty.call(groups,b.dataset.invGroup)){invGroup=b.dataset.invGroup;invFilter=groups[invGroup];render()}return}if(b.dataset.filter){invFilter=b.dataset.filter;render();return}if(b.dataset.inspect){selectedUid=b.dataset.inspect;render();return}if(b.dataset.action==='close-inspect'){selectedUid=null;render();return}if(b.dataset.unequip){if(state.mission){message='Nie możesz zmieniać ekwipunku podczas wyprawy.';render();return}let slot=b.dataset.unequip;if(slot in state.equip){state.equip[slot]=null;openItemDetail=null;message='Zdjęto przedmiot.';save();render()}return}
 if(b.dataset.equip!==undefined){
  if(state.mission){message='Nie możesz zmieniać ekwipunku podczas wyprawy.';render();return}

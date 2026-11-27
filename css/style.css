@@ -1470,3 +1470,9 @@ body.arena-report-modal-open{overflow:hidden}
 
 /* ASHEN 0.6 — komunikat o etapie instalacji */
 .ashen-build-tag{display:inline-block;margin-left:.45rem;padding:.1rem .45rem;border:1px solid #856d40;border-radius:999px;color:#e9c88d;font-size:.76rem;font-weight:700;letter-spacing:.01em;vertical-align:middle;}
+
+/* ASHEN 222: presety, dopasowane do istniejącej palety gry */
+.ashen-presets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px}
+.ashen-preset-entry{border:1px solid var(--border,#4d555b);border-radius:8px;padding:12px;background:rgba(0,0,0,.13)}
+.ashen-preset-entry .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ashen-preset-entry button{font-size:.85rem}
