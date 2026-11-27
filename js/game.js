@@ -1179,9 +1179,9 @@ function heroAttacks(options={}){
  // Also support equipping 2R weapon in primary hand if UI permits it.
  if(!attacks.length&&main&&main.slot==='hand2')addWeapon(main,hands[0],1);
  if(!attacks.length)addWeapon(statsOf({id:'knife',rarity:0}),hands[0],1);
- // Stary kontrakt PvP dopuszcza maksymalnie osiem akcji ataku.
- // Przekroczenie limitu w Starciach 0.6.0 rozstrzygamy bez dodatkowych rzutów RNG.
- return options.combat060===true?attacks.slice(0,8):attacks;
+ // W lokalnym PvE 0.6 każda wyposażona broń zachowuje wszystkie bazowe ataki
+ // i premie z przedmiotów. Historyczny kontrakt PvP pozostaje bez zmian.
+ return attacks;
 }
 // ASHEN v0.4.4: shared combat defense computation for exploration, Starcia,
 // PvP snapshots and the character panel. The expedition flag here is historical:
@@ -1556,9 +1556,22 @@ function arenaCombatProfiles(entry){
  <div class="arena-fighter-portraits"><div class="arena-fighter-portrait is-hero">${heroPortrait}<strong>${escape(hero.name)}</strong><small>Twoja postać · Poziom ${hero.level}</small></div><span class="arena-fighter-versus">VS</span><div class="arena-fighter-portrait is-enemy">${enemyPortrait}<strong>${escape(foe.name)}</strong><small>${entry.boss?'Boss':'Przeciwnik'} · Etap ${entry.stage}</small></div></div>
  <div class="arena-combat-table-wrap"><table class="arena-combat-table arena-comparison-expanded"><thead><tr><th scope="col">Parametr</th><th scope="col">${escape(hero.name)}</th><th scope="col">${escape(foe.name)}</th></tr></thead><tbody>${rows.map(([label,h,f,group,overrideH,overrideF],i)=>{const hNumber=overrideH!==undefined?overrideH:(typeof h==='number'?h:null),fNumber=overrideF!==undefined?overrideF:(typeof f==='number'?f:null);const [hc,fc]=compare(hNumber,fNumber);return `<tr class="${group==='attr'?'arena-attribute-row':''} ${i===6?'arena-attribute-start':''}"><th scope="row">${escape(label)}</th><td class="${hc}">${escape(String(h))}</td><td class="${fc}">${escape(String(f))}</td></tr>`}).join('')}</tbody></table></div>
  <p class="arena-profile-explainer">Kolory porównują wyższe wartości: <strong class="arena-stat-better">zielony — wyższa</strong>, <strong class="arena-stat-worse">czerwony — niższa</strong>, <strong class="arena-stat-even">pomarańczowy — równa</strong>. Obrażenia to suma potencjalnych zakresów ataków przed trafieniem, krytykiem i pancerzem. Atrybuty przeciwnika (Siła, Zręczność, Wytrzymałość, Percepcja) pozostają <strong>orientacyjnym profilem taktycznym</strong>, nie są dodatkowymi mnożnikami walki.</p>
- <div class="arena-profile-weapons"><strong>Uzbrojenie bohatera w chwili starcia:</strong> ${(hero.weapons||[]).map(w=>`${escape(w.name)} (${w.hand==='right'?'prawa':'lewa'} ręka, ${w.power}%${Number.isFinite(w.low)&&Number.isFinite(w.high)?`, ${w.low}–${w.high} obr.`:''})`).join(' · ')||'Brak danych o uzbrojeniu.'}<div><strong>Przeciwnik:</strong> jeden atak ${foeDmg} obrażeń bazowych na rundę.</div></div></section>`;
+ <div class="arena-profile-weapons"><strong>Uzbrojenie bohatera w chwili starcia:</strong> ${arenaWeaponSummary(hero.weapons)}<div><strong>Przeciwnik:</strong> jeden atak ${foeDmg} obrażeń bazowych na rundę.</div></div></section>`;
 }
 
+// Grupujemy historyczne migawki ataków wyłącznie w widoku raportu.
+// Nigdy nie łączymy różnych rąk ani różnych zakresów obrażeń.
+function arenaWeaponSummary(weapons){
+ if(!Array.isArray(weapons)||!weapons.length)return 'Brak danych o uzbrojeniu.';
+ const groups=new Map();
+ for(const w of weapons){
+  const key=JSON.stringify([w.name,w.hand,w.power,w.low,w.high]);
+  const found=groups.get(key);
+  if(found)found.count++;
+  else groups.set(key,{...w,count:1});
+ }
+ return [...groups.values()].map(w=>`${escape(w.name||'Broń')} (${w.hand==='right'?'prawa':'lewa'} ręka, ${escape(String(w.power))}%${Number.isFinite(w.low)&&Number.isFinite(w.high)?`, ${w.low}–${w.high} obr.`:''}, ${w.count} ${w.count===1?'atak':(w.count>=2&&w.count<=4?'ataki':'ataków')})`).join(' · ');
+}
 function arenaRoundReview(entry){
  if(!Array.isArray(entry?.roundHistory)||!entry.roundHistory.length)return `<div class="arena-report-legacy"><strong>Przebieg rund</strong><p>Ten zapis pochodzi ze starszej wersji, dlatego nie zawiera PŻ po każdej rundzie. Przebieg starszych walk nie zawiera zapisu poszczególnych rund.</p></div>`;
  return `<section class="arena-round-review"><div class="arena-battle-section-title"><span>02 / RUNDY</span><h4>Przebieg starcia</h4></div><div class="arena-rounds-list">${entry.roundHistory.map((r,i)=>`<details class="arena-round-card"><summary><span class="arena-round-number">RUNDA ${r.number}</span><span class="arena-round-damage">Zadane ${r.heroDamage} · Otrzymane ${r.enemyDamage}</span><span class="arena-round-expand">Szczegóły</span></summary><div class="arena-round-card-body"><div class="arena-round-hp-grid"><div><span>Twoje PŻ</span><strong>${arenaHpLabel(r.heroHp,entry.heroMaxHp)}</strong>${arenaHpBar(r.heroHp,entry.heroMaxHp)}</div><div><span>PŻ przeciwnika</span><strong>${arenaHpLabel(r.enemyHp,entry.enemyMaxHp)}</strong>${arenaHpBar(r.enemyHp,entry.enemyMaxHp,true)}</div></div><div class="arena-round-events">${(r.events||[]).map(line=>`<p class="${line.includes('Zadajesz')||line.includes('Przeciwnik chybia')?'is-hero':'is-enemy'}">${escape(line)}</p>`).join('')||'<p>W tej rundzie nie zarejestrowano zdarzeń.</p>'}</div></div></details>`).join('')}</div></section>`;
