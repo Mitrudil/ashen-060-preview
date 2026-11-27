@@ -1484,3 +1484,18 @@ body.arena-report-modal-open{overflow:hidden}
 .ashen-catalog121 table{border-collapse:collapse;min-width:610px}
 .ashen-catalog121 th,.ashen-catalog121 td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line,#34404a);vertical-align:top}
 .ashen-catalog121 th{color:var(--gold,#d6ad70)}
+
+/* ASHEN 233 — visual socket markers. Pure presentation; saved artifacts are not changed. */
+.ashen-socket-line{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;margin:4px 0 2px;vertical-align:middle}
+.ashen-socket-symbol{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:6px;border:1px solid #6c5a40;background:linear-gradient(145deg,#28333a,#151b20);color:#85939a;font-size:16px;box-shadow:inset 0 1px #ffffff12}
+.ashen-socket-symbol.filled{border-color:#d6ad70;color:#f5d399;background:radial-gradient(circle at 42% 32%,#695135,#201d20 78%);box-shadow:0 0 9px #caa05a35,inset 0 1px #ffffff26}
+.ashen-socket-symbol.empty{opacity:.65;border-style:dashed}
+.ashen-item-art-stack{width:100%;min-width:0;display:grid;justify-items:center;align-content:center;gap:12px}
+.ashen-socket-showcase{width:100%;padding:12px;border:1px solid #665037;border-radius:11px;background:linear-gradient(160deg,#25262a,#11171c);display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.ashen-socket-heading{display:flex;align-items:center;gap:10px;color:#ebd2a7;letter-spacing:.04em;font-size:13px}
+.ashen-socket-heading small{color:#aab1b4;font-weight:500;letter-spacing:normal}
+.ashen-socket-icons{display:flex;gap:12px;justify-content:center}
+.ashen-socket-icons .ashen-socket-symbol{width:46px;height:46px;border-radius:10px;font-size:27px}
+.ashen-socket-names{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.ashen-socket-name{font-size:11px;color:#f1ddbc;border:1px solid #6d5940;padding:4px 7px;border-radius:6px;background:#1a2228}
+@media(max-width:620px){.ashen-socket-icons .ashen-socket-symbol{width:40px;height:40px;font-size:23px}.ashen-socket-showcase{padding:9px}}
