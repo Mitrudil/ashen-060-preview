@@ -1476,3 +1476,11 @@ body.arena-report-modal-open{overflow:hidden}
 .ashen-preset-entry{border:1px solid var(--border,#4d555b);border-radius:8px;padding:12px;background:rgba(0,0,0,.13)}
 .ashen-preset-entry .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .ashen-preset-entry button{font-size:.85rem}
+
+/* ASHEN 223 — katalog 0.6 zachowujący oryginalny wygląd. */
+.ashen-catalog121{margin-top:14px}.ashen-catalog121>summary{cursor:pointer;font-weight:700}
+.ashen-catalog121-group{margin:8px 0;border:1px solid var(--line,#34404a);border-radius:8px;padding:8px 12px}
+.ashen-catalog121-group>summary{cursor:pointer;font-weight:600}
+.ashen-catalog121 table{border-collapse:collapse;min-width:610px}
+.ashen-catalog121 th,.ashen-catalog121 td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line,#34404a);vertical-align:top}
+.ashen-catalog121 th{color:var(--gold,#d6ad70)}

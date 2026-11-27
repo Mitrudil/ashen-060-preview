@@ -3447,6 +3447,17 @@ function equipmentPresets(){
  if(!Array.isArray(state.equipmentPresets))state.equipmentPresets=[];
  return state.equipmentPresets;
 }
+// ASHEN 223 — odzyskany katalog 100 baz, wyłącznie do odczytu.
+// Diagnostyka nie tworzy obiektów w ekwipunku, nie mutuje zapisów ani nie zmienia dropów.
+function equipmentCatalogPanel(){
+ const api=window.Ashen060BaseCatalog;
+ if(!api||typeof api.audit!=='function'||typeof api.render!=='function')return '';
+ try{
+  const report=api.audit();
+  if(report.total!==100)return `<section class="panel section"><strong>⚠ Katalog 0.6</strong><p>Niepełna lista przedmiotów: ${Number(report.total)||0}/100. Nie wprowadzono zmian do ekwipunku.</p></section>`;
+  return api.render();
+ }catch(err){console.warn('Katalog 0.6 — nie można odczytać danych:',err);return '<section class="panel section"><strong>⚠ Katalog 0.6 chwilowo niedostępny.</strong></section>'}
+}
 function equipmentPresetPanel(){
  const slots=equipmentPresets();
  return `<section class="panel section ashen-presets-panel"><h3>⚔ Zapisane zestawy ekwipunku</h3>
@@ -3509,7 +3520,7 @@ function inventory(){
  <div class="bulk-summary">Wartość zaznaczonych: <strong>${bulkSum.credits.toLocaleString('pl-PL')} kredytów</strong><br>Materiały z rozłożenia: <strong>${selectedForBulk.length?salvageLabel(bulkSum.mats):'—'}</strong></div>
  <div class="actions"><button class="primary" data-action="bulk-sell" ${selectedForBulk.length?'':'disabled'}>Sprzedaj zaznaczone (${selectedForBulk.length})</button><button data-action="bulk-salvage" ${selectedForBulk.length?'':'disabled'}>Rozłóż zaznaczone (${selectedForBulk.length})</button></div>
  <div class="bulk-hint">Założone i zabezpieczone przedmioty nie mogą zostać zaznaczone. Potwierdzenie pokaże łączną nagrodę. Zaznaczenie nie jest zapisywane między uruchomieniami gry.</div></div>`;
- return section('Ekwipunek',`${equipmentPresetPanel()}${zLabPanel()}
+ return section('Ekwipunek',`${equipmentPresetPanel()}${equipmentCatalogPanel()}${zLabPanel()}
  <div class="small muted" style="margin:8px 0 14px">Przedmioty z nowych Wypraw trafiają od razu do ekwipunku. Zakładasz je standardowym przyciskiem „Załóż”. ${Object.values(state.equip).some(uid=>instance(uid)?.qualitySchema==='ashen-v06')?'Serwerowe PvP wymaga jeszcze aktualizacji obsługi nowych statystyk; zapis postaci w chmurze pozostaje dostępny.':''}</div>
  <div class="inventory-premium-intro">
    <div class="inventory-premium-copyblock">
