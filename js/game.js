@@ -715,12 +715,21 @@ function affixDetails(o){return (o.effects||[]).length?`<div class="small muted"
 // Zachowujemy względne wagi przedmiotów z wcześniejszych pul, bez ograniczeń lokacji.
 // Oddzielne pule bossów, artefaktów i surowców nie są tu mieszane.
 const COMMON_EXPEDITION_DROPS=(()=>{
+ // ASHEN 226: zwykle wyprawy losuja tylko z katalogu 100 baz ASHEN 0.6.
+ // Stare definicje zachowujemy dla istniejacych zapisow, lecz nie dopuszczamy ich do nowych dropow.
+ const catalog=window.Ashen060BaseCatalog;
+ if(!catalog||typeof catalog.entries!=='function')throw Error('ASHEN 226: brak katalogu 100 baz. Losowanie zostalo wstrzymane.');
+ const bases=catalog.entries();
+ if(bases.length!==100)throw Error('ASHEN 226: katalog 100 baz jest niekompletny.');
+ const allowed=new Set(bases.map(d=>d.matchStatus==='missing'?d.modernId:d.legacyId));
+ if(allowed.size!==100||allowed.has(undefined))throw Error('ASHEN 226: nieprawidlowe powiazanie ID katalogu.');
  const weights=new Map();
  for(const loc of locations)for(const [id,w] of loc.drops){
   if(Number.isFinite(w)&&w>0)weights.set(id,Math.max(weights.get(id)||0,w));
  }
- return items.filter(d=>d.slot!=='material'&&!d.artifact&&!d.id.startsWith('boss'))
-  .map(d=>({id:d.id,w:weights.get(d.id)||0.10}));
+ const pool=items.filter(d=>allowed.has(d.id)).map(d=>({id:d.id,w:weights.get(d.id)||0.10}));
+ if(pool.length!==100)throw Error('ASHEN 226: nie odnaleziono wszystkich 100 przedmiotow w silniku.');
+ return pool;
 })();
 function pickLoot(loc,exploration=null,forcedCount=null){
  // Tylko zwycięstwa: jeden pewny przedmiot; maksymalnie trzy przedmioty lacznie z eksploracja, anomalia i towarzyszem.
