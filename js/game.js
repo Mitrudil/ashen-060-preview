@@ -560,7 +560,7 @@ function statsOf(inst){
  const name=[rarityPrefix(inst,d),prefixLabel(pref,d),d.name,suf?.name].filter(Boolean).join(' ');
  const weapon=weaponSlot(d.slot),upgrade=Math.min(5,Math.max(0,Number(inst?.upgrade)||0));
  const combatModel=weapon?combatV2WeaponConfig(d.id):null;
- const upgradedName=upgrade?name+' +'+upgrade:name;
+ const upgradedName=upgrade?name+' (+'+upgrade+')':name;
  const armorUp=UPGRADE_POWER[upgrade];
  return {...d,name:upgradedName,upgrade,rarity:rarity(inst).name,
   min:weapon?Math.max(1,combatModel?Math.round(combatModel.min*combatModel.scale*m*(1+dmgPct/100)*(1+COMBAT_V2_WORKSHOP[upgrade])):Math.round(d.min*m*(1+dmgPct/100))+UPGRADE_POWER[upgrade]):undefined,
