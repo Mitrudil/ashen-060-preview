@@ -231,6 +231,40 @@ extraItems.push(
 {id:'zerobracers',name:'Karwasze strażnika Zero',slot:'hands',armor:8,bonus:{}}
 );
 items.push(...extraItems);
+
+// ASHEN 225 — 26 dotąd nieobecnych baz w rzeczywistym ekwipunku i łupach.
+// Dane pochodzą z zatwierdzonego katalogu 100 baz; nie modyfikujemy starych ID.
+// Nowe bronie mają bazowe obrażenia z katalogu, ale stary silnik PvE
+// ogranicza sekwencje do 3 ataków. Rozszerzenie walki będzie osobnym wydaniem.
+const ASHEN225_SLOT={palna_1h:'hand1',biala_1h:'hand1',biala_2h:'hand2',dystansowa:'hand2',glowa:'head',koszulka:'shirt',spodnie:'pants',buty:'boots'};
+const ASHEN225_ATTRS=new Set(['str','dex','end','per','int','cha']);
+const ASHEN225_CATALOG=window.Ashen060BaseCatalog;
+if(!ASHEN225_CATALOG||typeof ASHEN225_CATALOG.entries!=='function'||ASHEN225_CATALOG.audit().total!==100){
+ console.warn('ASHEN 225: katalog baz nie jest kompletny. Nowe przedmioty nie zostaly zarejestrowane.');
+}else{
+ const missing=ASHEN225_CATALOG.entries().filter(d=>d.matchStatus==='missing');
+ if(missing.length!==26)throw Error('ASHEN 225: nieoczekiwana liczba nowych baz.');
+ const mapped=missing.map(d=>{
+  const slot=ASHEN225_SLOT[d.category];
+  if(!slot)throw Error('ASHEN 225: nieznany slot dla '+d.modernId);
+  const armor=(d.baseEffects||[]).filter(e=>e.key==='armorFlat').reduce((n,e)=>n+e.value,0);
+  const bonus={};
+  for(const e of d.baseEffects||[])if(ASHEN225_ATTRS.has(e.key))bonus[e.key]=(bonus[e.key]||0)+e.value;
+  const itemDef={id:d.modernId,name:d.name,slot,bonus,flavor:'Odzyskany model wyposażenia ASHEN 0.6.',modernBaseId:d.modernId,
+   requiredLevel:d.requiredLevel,requiredAttribute:d.requiredAttribute,requiredValue:d.requiredValue,
+   modernBaseAttacks:d.baseAttacks||null};
+  if(slot==='hand1'||slot==='hand2'){
+   if(!Number.isFinite(d.minDamage)||!Number.isFinite(d.maxDamage))throw Error('Brak obrażeń: '+d.modernId);
+   itemDef.min=d.minDamage;itemDef.max=d.maxDamage;
+  }else itemDef.armor=Math.max(0,armor);
+  return itemDef;
+ });
+ const known=new Set(items.map(x=>x.id));
+ if(mapped.some(x=>known.has(x.id)))throw Error('ASHEN 225: konflikt ID nowych przedmiotow.');
+ items.push(...mapped);
+ window.ASHEN225_ITEMS=Object.freeze({integrated:mapped.length,ids:Object.freeze(mapped.map(x=>x.id))});
+}
+
 const twoHandIds=new Set(['rifle','shotgun','crossbow','carbine','hammer','sniper','flame','rail','lmg','harpoon','sledge','crowbar']);
 const headIds=new Set(['mask']);
 const extraIds=new Set(['compass','radio','scope','injector','badge','module']);
