@@ -532,6 +532,25 @@ const COMBAT_V2_WEAPONS={"baton":{"min":5,"max":8,"attacks":1,"accuracy":2,"crit
 const COMBAT_V2_WORKSHOP=[0,.028,.056,.084,.112,.14];
 function combatV2WeaponConfig(id){return COMBAT_V2_WEAPONS[id]||null;}
 const UPGRADE_POWER=[0,1,3,5,10,20];
+// ASHEN 227: autoryzowany katalog 100 baz jest zrodlem liczby atakow w SOLO PvE.
+// Pozostale kontrakty (w tym online PvP) zachowuja stare liczenie do czasu migracji serwera.
+const ASHEN227_APPROVED_ATTACKS=(()=>{
+ const catalog=window.Ashen060BaseCatalog;
+ if(!catalog||typeof catalog.entries!=='function')throw Error('ASHEN 227: brak katalogu atakow.');
+ const entries=catalog.entries();
+ if(entries.length!==100)throw Error('ASHEN 227: katalog przedmiotow niekompletny.');
+ const result=new Map();
+ for(const row of entries){
+  const id=row.matchStatus==='missing'?row.modernId:row.legacyId;
+  if(!id||result.has(id))throw Error('ASHEN 227: powielone ID katalogu.');
+  if(row.baseAttacks!=null){
+   const n=Number(row.baseAttacks);
+   if(!Number.isInteger(n)||n<1||n>8)throw Error('ASHEN 227: nieprawidlowa liczba atakow '+id);
+   result.set(id,n);
+  }
+ }
+ return result;
+})();
 function statsOf(inst){
  const d=def(inst);if(!d)return null;
  const m=rarity(inst).mult,mods=modifiersOf(inst);
@@ -548,7 +567,7 @@ function statsOf(inst){
   max:weapon?Math.max(1,combatModel?Math.round(combatModel.max*combatModel.scale*m*(1+dmgPct/100)*(1+COMBAT_V2_WORKSHOP[upgrade])):Math.round(d.max*m*(1+dmgPct/100))+UPGRADE_POWER[upgrade]):undefined,
   armor:!weapon&&d.slot!=='material'?Math.max(0,Math.round((d.armor||0)*m*(1+armorPct/100))+((d.armor||0)===0 ? window.Ashen060QualityBridge.qualityArmorFloor(inst,window.Ashen060Quality) : 0)+armorUp):undefined,
   bonus:rolledBonus(inst),critPp:critPp+(combatModel?.crit||0),accuracy:accuracy+(combatModel?.accuracy||0),extraAttacks,damagePct:dmgPct,armorPct,
-  combatV2:!!combatModel,baseAttacks:combatModel?.attacks||1,labPen:(combatModel?.pen||0)+armorPen,labCritMultiplier:combatModel?.critMultiplier||1.6,
+  combatV2:!!combatModel,baseAttacks:combatModel?.attacks||1,approvedPvEAttacks:weapon?(ASHEN227_APPROVED_ATTACKS.get(d.id)||null):null,labPen:(combatModel?.pen||0)+armorPen,labCritMultiplier:combatModel?.critMultiplier||1.6,
   prefixName:prefixLabel(pref,d)||null,suffixName:suf?.name||null,
   effects:mods.map(x=>({name:x===pref?prefixLabel(x,d):x.name,description:modifierText(x)}))};
 }
@@ -1138,7 +1157,9 @@ function heroAttacks(options={}){
  const main=statsOf(instance(state.equip[hands[0]])),off=statsOf(instance(state.equip[hands[1]]));
  const attacks=[];
  const addWeapon=(weapon,hand,power)=>{
-  const count=Math.max(1,Math.min(3,Number(weapon?.baseAttacks)||1));
+  const count=options.combat060===true
+   ?Math.max(1,Math.min(8,Number(weapon?.approvedPvEAttacks)||Number(weapon?.baseAttacks)||1))
+   :Math.max(1,Math.min(3,Number(weapon?.baseAttacks)||1));
   for(let i=0;i<count;i++)attacks.push({weapon,hand,power});
   // Extra strike from Szybki is weak relative to ENTIRE base attack sequence,
   // not a free full hit from a single-shot high-damage weapon.
@@ -2967,7 +2988,7 @@ function itemDetailContent(){if(!openItemDetail)return '';
  const wornSlot=owned?Object.keys(state.equip).find(slot=>state.equip[slot]===owned.uid):null;
  const previewSlot=owned?(itemEquipSlots(owned).includes(itemCompareSlot)?itemCompareSlot:itemEquipDefaultSlot(owned)):null;
  const equipActions=!owned||defn.slot==='material'?'':wornSlot?`<button class="primary" data-unequip="${wornSlot}">Zdejmij</button>`:`<button class="primary" data-equip="${escape(owned.uid)}" ${defn.slot==='hand1'?`data-hand="${previewSlot}"`:''} ${defn.slot==='extra'?`data-extra-slot="${previewSlot}"`:''}>Załóż · ${escape(slotLabels[previewSlot]||'wybrany slot')}</button>`;
- return `<div class="ashen-item-overlay" role="presentation"><div class="ashen-item-modal" role="dialog" aria-modal="true" aria-labelledby="ashen-item-title"><button class="ashen-item-close" data-item-close aria-label="Zamknij szczegóły">✕</button><div class="tag">${escape(weaponFamilyLabel(defn))}</div><h2 id="ashen-item-title">${escape(o.name)}</h2><div class="ashen-item-modal-grid"><div class="ashen-item-art">${itemDetailImage(defn)}</div><div class="ashen-item-facts"><p class="small muted">${escape(defn.flavor||'Przedmiot zdobyty na Pustkowiach.')}</p><div class="detail-stat"><span>${weaponSlot(o.slot)?'Obrażenia':o.slot==='material'?'Rodzaj':'Pancerz'}</span><strong>${weaponSlot(o.slot)?`${Number(o.min)||0}–${Number(o.max)||0}`:o.slot==='material'?'Surowiec':String(Number(o.armor)||0)}</strong></div><div class="detail-stat"><span>Rzadkość</span><strong>${escape(o.rarity||'Zwykły')}</strong></div>${owned&&Number.isInteger(owned.socketCapacity)?`<div class="detail-stat"><span>Gniazda artefaktów</span><strong>${owned.socketCapacity===0?"Brak gniazd artefaktów":`${owned.socketCapacity} / 3`}</strong></div>`:""}${owned?`<div class="detail-stat"><span>Ulepszenie</span><strong>+${owned.upgrade||0}</strong></div>`:''}${weaponSlot(defn.slot)?`<div class="detail-stat"><span>Ręce</span><strong>${defn.slot==='hand1'?'Jedna':'Dwie'}</strong></div><div class="detail-stat"><span>Ataki na rundę</span><strong>${(Number(o.baseAttacks)||1)+(Number(o.extraAttacks)||0)}</strong></div>${o.combatV2?`<div class="detail-stat"><span>Model walki</span><strong>ASHEN 0.5 · test bojowy</strong></div>`:''}`:''}<div class="detail-affix"><strong>${modifierGlyph('prefix',defn,owned?findModifier(prefixDefs,owned.prefix):null)} Prefiks</strong><span>${escape(o.prefixName||'Brak')}</span></div><div class="detail-affix"><strong>${modifierGlyph('suffix',defn,owned?findModifier(suffixDefs,owned.suffix):null)} Sufiks</strong><span>${escape(o.suffixName||'Brak')}</span></div>${owned?`<div class="small muted">${statDetails(o)}${itemBonusSourceHtml(owned)}</div>${itemSetPanel(owned)}${accessorySetItemPanel(owned)}${artifactDetailPanel(owned)}`:''}</div></div>${owned&&!wornSlot&&defn.slot!=='material'?itemComparePanel(owned):''}${owned?item060PreviewPanel(owned,wornSlot||previewSlot):''}<div class="actions ashen-modal-equip-actions">${equipActions}${owned&&defn.slot!=='material'?`<button data-lock="${escape(owned.uid)}">${owned.locked?'🔒 Odblokuj':'🔓 Zabezpiecz'}</button><button data-sale="${escape(owned.uid)}" ${wornSlot||owned.locked?'disabled':''}>Sprzedaj · ${saleValue(owned)} kr.</button><button data-salvage="${escape(owned.uid)}" ${wornSlot||owned.locked?'disabled':''}>Zezłomuj · ${escape(salvageLabel(salvageValue(owned)))}</button>`:''}<button data-item-close>Zamknij</button></div></div></div>`
+ return `<div class="ashen-item-overlay" role="presentation"><div class="ashen-item-modal" role="dialog" aria-modal="true" aria-labelledby="ashen-item-title"><button class="ashen-item-close" data-item-close aria-label="Zamknij szczegóły">✕</button><div class="tag">${escape(weaponFamilyLabel(defn))}</div><h2 id="ashen-item-title">${escape(o.name)}</h2><div class="ashen-item-modal-grid"><div class="ashen-item-art">${itemDetailImage(defn)}</div><div class="ashen-item-facts"><p class="small muted">${escape(defn.flavor||'Przedmiot zdobyty na Pustkowiach.')}</p><div class="detail-stat"><span>${weaponSlot(o.slot)?'Obrażenia':o.slot==='material'?'Rodzaj':'Pancerz'}</span><strong>${weaponSlot(o.slot)?`${Number(o.min)||0}–${Number(o.max)||0}`:o.slot==='material'?'Surowiec':String(Number(o.armor)||0)}</strong></div><div class="detail-stat"><span>Rzadkość</span><strong>${escape(o.rarity||'Zwykły')}</strong></div>${owned&&Number.isInteger(owned.socketCapacity)?`<div class="detail-stat"><span>Gniazda artefaktów</span><strong>${owned.socketCapacity===0?"Brak gniazd artefaktów":`${owned.socketCapacity} / 3`}</strong></div>`:""}${owned?`<div class="detail-stat"><span>Ulepszenie</span><strong>+${owned.upgrade||0}</strong></div>`:''}${weaponSlot(defn.slot)?`<div class="detail-stat"><span>Ręce</span><strong>${defn.slot==='hand1'?'Jedna':'Dwie'}</strong></div><div class="detail-stat"><span>Ataki bazowe PvE</span><strong>${Number(o.approvedPvEAttacks)||Number(o.baseAttacks)||1}</strong></div>${o.combatV2?`<div class="detail-stat"><span>Model walki</span><strong>ASHEN 0.5 · test bojowy</strong></div>`:''}`:''}<div class="detail-affix"><strong>${modifierGlyph('prefix',defn,owned?findModifier(prefixDefs,owned.prefix):null)} Prefiks</strong><span>${escape(o.prefixName||'Brak')}</span></div><div class="detail-affix"><strong>${modifierGlyph('suffix',defn,owned?findModifier(suffixDefs,owned.suffix):null)} Sufiks</strong><span>${escape(o.suffixName||'Brak')}</span></div>${owned?`<div class="small muted">${statDetails(o)}${itemBonusSourceHtml(owned)}</div>${itemSetPanel(owned)}${accessorySetItemPanel(owned)}${artifactDetailPanel(owned)}`:''}</div></div>${owned&&!wornSlot&&defn.slot!=='material'?itemComparePanel(owned):''}${owned?item060PreviewPanel(owned,wornSlot||previewSlot):''}<div class="actions ashen-modal-equip-actions">${equipActions}${owned&&defn.slot!=='material'?`<button data-lock="${escape(owned.uid)}">${owned.locked?'🔒 Odblokuj':'🔓 Zabezpiecz'}</button><button data-sale="${escape(owned.uid)}" ${wornSlot||owned.locked?'disabled':''}>Sprzedaj · ${saleValue(owned)} kr.</button><button data-salvage="${escape(owned.uid)}" ${wornSlot||owned.locked?'disabled':''}>Zezłomuj · ${escape(salvageLabel(salvageValue(owned)))}</button>`:''}<button data-item-close>Zamknij</button></div></div></div>`
 }
 function slotChip(slot,uid){
  const inst=instance(uid),o=statsOf(inst),empty=!o,label=slotLabels[slot];
