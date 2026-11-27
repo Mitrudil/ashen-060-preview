@@ -692,9 +692,10 @@ function modernRollItem(id,expedition=null,luck=0){
  if(!pool||!d||d.slot==='material'||d.artifact)return null;
  const weights=modernRarityWeightsFor(expedition,luck);
  const rar=window.Ashen060Loot.rollWeightedQuality(weights);
- // Legacy afiksy uzywaja indeksow swoich progow. Nowe jakosci mapujemy
- // na analogiczne progi sily afiksow BEZ podmieniania indeksu samej jakosci.
- const affixTier=[0,2,3,4,4][rar];
+ // ASHEN 230: piec jakosci 0.6 ma piec niezaleznych progow afiksow.
+ // Rzadki (1) nie moze dziedziczyc szans Epickiego (2), a Epicki (2)
+ // szans Legendarnego (3). Dawnych przedmiotow nie przeliczamy.
+ const affixTier=rar;
  const prefix=Math.random()<prefixChance[affixTier]?pickModifier(prefixDefs,d,affixTier):null;
  const suffix=Math.random()<suffixChance[affixTier]?pickModifier(suffixDefs,d,affixTier):null;
  const base={uid:'loot-'+Date.now()+'-'+Math.random().toString(36).slice(2,10),id,prefix,suffix,artifactAffixesInitialized:false,locked:rar>=3};
