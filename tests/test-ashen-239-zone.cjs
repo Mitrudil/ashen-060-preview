@@ -37,6 +37,6 @@ assert(game.includes("['zone','◈ Strefa Anomalii']"));
 assert(game.includes("zone:()=>window.AshenZone239?.html(zone244Reconcile())"));
 assert(game.includes('const artifactFind=null;'));
 assert(!game.includes('rollExpeditionArtifact(loc)'));
-assert(html.includes('ashen-zone-239.js?v=249'));
-assert(html.indexOf('ashen-zone-239.js?v=249')<html.indexOf('game.js?v=249'));
+assert(html.includes('ashen-zone-239.js?v=250'));
+assert(html.indexOf('ashen-zone-239.js?v=250')<html.indexOf('game.js?v=250'));
 console.log('PASS ASHEN 239: 5 scen, 15 opcji, save/reload, jeden raport walki, bez duplikacji losowania, artefakty poza zwykłymi wyprawami');

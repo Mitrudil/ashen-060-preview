@@ -1,7 +1,7 @@
 /* Jedno zrodlo informacji o wersji gry i etapie przebudowy. */
 (function(root){
 'use strict';
-const info=Object.freeze({gameVersion:'0.5.4.1',targetVersion:'0.6.0',modernDropsEnabled:false,stage:47,build:249,release:'249',label:'przebudowa 0.6.0 · etap 57'});
+const info=Object.freeze({gameVersion:'0.5.4.1',targetVersion:'0.6.0',modernDropsEnabled:false,stage:47,build:250,release:'250',label:'przebudowa 0.6.0 · etap 58'});
 root.ASHEN_BUILD=info;
 document.title=`ASHEN — Kroniki Upadku | Build ${info.build} · silnik v${info.gameVersion}`;
 })(window);

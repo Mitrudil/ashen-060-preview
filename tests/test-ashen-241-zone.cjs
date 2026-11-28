@@ -17,5 +17,5 @@ for(let choice=0;choice<3;choice++){
 }
 assert(!z.scenes[4].choices[0][0].includes('wydobyć przedmiot'));
 const h=fs.readFileSync(path.join(base,'index.html'),'utf8');
-assert(h.includes('Build 249'));assert(h.includes('ashen-zone-239.js?v=249'));
+assert(h.includes('Build 250'));assert(h.includes('ashen-zone-239.js?v=250'));
 console.log('PASS 241: all 3 final choices can reveal artifact signal; fail result possible; no loot; persisted; no rerolls');

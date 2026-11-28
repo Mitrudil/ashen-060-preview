@@ -1309,10 +1309,21 @@ function fight(enemy,options={}){
  const a=options.testSnapshot?.attributes||attrs();
  const attacks=options.testSnapshot?.attacks||heroAttacks({combat060:options.combat060===true});
  const d=options.testSnapshot?.defense||heroDefense(options);
+ // Build 250: zamrożony snapshot rezonansów na początku walki. Wyłącznie lokalne PvE;
+ // laboratorium, PvP oraz historyczne tryby nie są modyfikowane.
+ const resonanceEngine=options.combat060===true&&!options.testSnapshot?window.Ashen250PveResonance:null;
+ const resonanceSim=window.Ashen249Resonance;
+ const pveResonance=resonanceEngine?.snapshot(state.artifactStock||[],Object.values(state.equip||{}),window.Ashen060Catalog?.artifact_effects||[],resonanceSim)||{};
+ const weaponType=w=>{
+  const style=weaponStyle(w);
+  return style==='firearm'?(w?.slot==='hand2'?'firearm2':'firearm1'):style;
+ };
+ const resonanceDefense=resonanceEngine?.defense(pveResonance,resonanceSim,[...new Set(attacks.map(x=>weaponType(x.weapon)))])||{};
+ const pveDefense={...d,hp:d.hp+(resonanceDefense.hp||0),armor:d.armor+(resonanceDefense.armor||0),dodge:d.dodge+(resonanceDefense.dodge||0),acc:d.acc+(resonanceDefense.accuracy||0)};
  const random=typeof options.testRandom==='function'?options.testRandom:Math.random;
  const randomInt=(lo,hi)=>Math.floor(random()*(hi-lo+1))+lo;
  const se=options.testSnapshot?(options.testSnapshot.setEffects||{}):setEngineEffects().effects;
- const hero={hp:options.testSnapshot&&Number.isFinite(options.testInitialHp)?Math.max(1,Math.min(d.hp,Math.floor(options.testInitialHp))):d.hp,acc:d.acc,dodge:d.dodge,armor:d.armor,shield:Math.max(0,se.startShield||0)};
+ const hero={hp:options.testSnapshot&&Number.isFinite(options.testInitialHp)?Math.max(1,Math.min(pveDefense.hp,Math.floor(options.testInitialHp))):pveDefense.hp,acc:pveDefense.acc,dodge:pveDefense.dodge,armor:pveDefense.armor,shield:Math.max(0,se.startShield||0)};
  const xy={missed:false,dodged:false,critProtectedRound:0};
  // Zdolności mistrzowskie są rejestrowane na jedną walkę — nigdy w stanie gracza.
  const zActive=id=>se['master_'+id]===1;
@@ -1327,7 +1338,7 @@ function fight(enemy,options={}){
  // Rozszerzone raporty zapisujemy tylko dla Starć. Wyprawy pozostają bez zmian.
  const recordRounds=!!options.recordRounds;
  // Maksymalne PŻ są niezależne od PŻ początkowych ustawionych przez Laboratorium.
- const heroMaxHp=d.hp,foeMaxHp=foe.hp,roundHistory=[];
+ const heroMaxHp=pveDefense.hp,foeMaxHp=foe.hp,roundHistory=[];
  const battleProfile=recordRounds?{
    hero:{name:state.name,origin:state.origin,level:state.level,hp:heroMaxHp,armor:hero.armor,dodge:Math.round(hero.dodge),accuracy:Math.round(hero.acc),str:a.str,dex:a.dex,end:a.end,per:a.per,int:a.int,cha:a.cha,attacks:attacks.length,
      weapons:attacks.map(w=>({name:w.weapon?.name||'Broń',hand:w.hand,power:Math.round(w.power*100),...weaponDamageRange(a,w.weapon,w.power)}))},
@@ -1337,13 +1348,15 @@ function fight(enemy,options={}){
  const hitAttack=(attacker,defender,who,r,weapon=null)=>{
    const isHero=who==='hero',performance=damageSummary[isHero?'hero':'foe'];performance.attempts++;
    const zEarly=isHero&&zActive('accessory_persuasive')?3:0;
-   const accuracy=isHero&&weapon?weaponAccuracy(a,weapon.weapon)+(se.accuracy||0)+(xy.missed?(se.afterMissAccuracy||0):0)+(xy.dodged?(se.afterDodgeAccuracy||0):0)+(r<=2?(se.earlyAccuracy||0):0)+zEarly:attacker.acc;
+   const rp=isHero&&weapon&&resonanceEngine?resonanceEngine.weapon(pveResonance,resonanceSim,weaponType(weapon.weapon)):null;
+   const tunedAttributes=rp?.perception?{...a,per:a.per+rp.perception}:a;
+   const accuracy=isHero&&weapon?weaponAccuracy(tunedAttributes,weapon.weapon)+(se.accuracy||0)+(rp?.accuracy||0)+(xy.missed?(se.afterMissAccuracy||0):0)+(xy.dodged?(se.afterDodgeAccuracy||0):0)+(r<=2?(se.earlyAccuracy||0):0)+zEarly:attacker.acc;
    const chance=clamp(70+2*(accuracy-defender.dodge)+(isHero?(weapon?.weapon.accuracy||0):0),15,95);
    const handName=weapon?' ('+(weapon.hand==='right'?'prawa':'lewa')+' ręka, '+Math.round(weapon.power*100)+'%)':'';
    // Wspólny resolver 0.6.0: Starcia i samotne Wyprawy.
    // Nie modyfikuje ekspedycji klanowych, PvP online ani Laboratorium.
    const modern=options.combat060===true;
-   const criticalChance=isHero?clamp(5+a.per*.5+(weapon?.weapon.critPp||0)+(se.critChance||0),0,35):6;
+   const criticalChance=isHero?clamp(5+tunedAttributes.per*.5+(weapon?.weapon.critPp||0)+(se.critChance||0),0,35):6;
    const verdict=modern?window.Ashen060PveBridge.outcome({
      attacker:{hp:attacker.hp,acc:accuracy,dodge:attacker.dodge,armor:attacker.armor},
      defender:{hp:defender.hp,acc:defender.acc,dodge:defender.dodge,armor:defender.armor},
@@ -1354,15 +1367,15 @@ function fight(enemy,options={}){
    if(failed){performance.misses++;if(isHero)xy.missed=true;else {xy.dodged=true;if(zActive('armor_flexible')||zActive('accessory_reflexive')){mastery.chargedDodge=true;mastery.dodgeRound=r}}lines.push(`Runda ${r}: ${modern&&verdict.outcome==='dodge'?'Unik':isHero?'Chybiasz':'Przeciwnik chybia'}${handName}.`);return}
    const critical=modern?verdict.critical:isHero?random()<criticalChance/100:random()<.06;
    let raw;
-   if(weapon){raw=Math.max(1,Math.floor((randomInt(weapon.weapon.min,weapon.weapon.max)+weaponAttributeDamage(a,weapon.weapon))*weapon.power));}
+   if(weapon){raw=Math.max(1,Math.floor((randomInt(weapon.weapon.min,weapon.weapon.max)+weaponAttributeDamage(tunedAttributes,weapon.weapon))*weapon.power));}
    else raw=randomInt(attacker.atk[0],attacker.atk[1]);
    const labWeapon=isHero&&weapon&&(options.testWeaponModel||weapon.weapon.combatV2)?weapon.weapon:null;
    let bonusPen=0;
    if(isHero&&zActive('accessory_technical')&&mastery.technicalHits<2){bonusPen+=defender.armor*.08;mastery.technicalHits++;zLog(r,'Techniczny: skan pancerza')}
    if(isHero&&zActive('accessory_reflexive')&&mastery.chargedDodge&&mastery.dodgeRound<=r&&mastery.reflexiveRound!==r){bonusPen+=4;mastery.reflexiveRound=r;zLog(r,'Refleksyjny: przebicie po uniku')}
-   const effectiveArmor=isHero?Math.max(0,defender.armor-(labWeapon?.labPen||0)-(se.armorPen||0)-bonusPen):defender.armor;
+   const effectiveArmor=isHero?Math.max(0,defender.armor-(labWeapon?.labPen||0)-(se.armorPen||0)-(rp?.penetration||0)-bonusPen):defender.armor;
    if(isHero){
-     raw=Math.max(1,Math.floor(raw*(1+(se.damagePct||0)/100+(xy.missed?(se.afterMissDamage||0):0)/100)));
+     raw=Math.max(1,Math.floor(raw*(1+(se.damagePct||0)/100+(rp?.damagePct||0)/100+(xy.missed?(se.afterMissDamage||0):0)/100)));
      xy.missed=false;xy.dodged=false;
      if(r===1&&performance.hits===0)raw=Math.floor(raw*(1+(se.firstHit||0)/100));
      if(zActive('armor_agile')&&performance.hits===0&&!modern){raw=Math.max(1,Math.floor(raw*1.12));zLog(r,'Zwinny: błyskawiczny start')}
@@ -3118,13 +3131,13 @@ function artifactFamilyProgressPanel(){
   const plan=window.Ashen248FamilyDesign?.[family];
   const simulator=window.Ashen249Resonance;
   const numeric=simulator?.catalog?.[family];
-  const proposal=numeric?`<p class="small muted"><strong>Proponowane wartości (nieaktywne w walce):</strong> 3/6 — ${numeric.at3.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}; 6/6 — ${numeric.at6.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. Progi są łączne, NIE sumują się.</p>`:'';
+  const proposal=numeric?`<p class="small muted"><strong>Proponowane wartości (testowo aktywne tylko w PvE 0.6):</strong> 3/6 — ${numeric.at3.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}; 6/6 — ${numeric.at6.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. Progi są łączne, NIE sumują się.</p>`:'';
   const calculated=simulator?simulator.evaluate(family,[...(wornNames.get(family)||[])]) : null;
-  const current=calculated?.tier?`<p class="small"><strong>Symulacja aktualnego wyposażenia:</strong> próg ${calculated.tier}/6 → ${calculated.bonuses.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. Tylko podgląd; premię dla broni uzależnimy od jej rodzaju.</p>`:'';
+  const current=calculated?.tier?`<p class="small"><strong>Symulacja aktualnego wyposażenia:</strong> próg ${calculated.tier}/6 → ${calculated.bonuses.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. W PvE 0.6 premie bojowe zależą od typu broni, w innych trybach to podgląd.</p>`:'';
   const overview=plan?`<p class="small"><strong>Specjalizacja: ${escape(plan.specialization)}</strong> — ${escape(plan.description)}</p>${proposal}${current}`:'';
   return `<div class="ashen-socket-lab-row" style="display:block"><strong>${escape(family)}</strong> · kolekcja ${owned}/6 · osadzone w założonym ekwipunku: ${active}/6 · rezonans: ${tier}${overview}<p class="small muted">${labels}</p></div>`;
  }).join('');
- return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Wartości rezonansu są symulowane — nie są jeszcze naliczane do walki ani łupów.</p>${html}</details>`;
+ return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Premie rezonansu są testowo aktywne tylko w lokalnych walkach PvE 0.6. PvP i łupy pozostają bez zmian, Nomadyczny nadal tylko w podglądzie.</p>${html}</details>`;
 }
 function artifactStockPanel(){
  const stock=state.artifactStock||[],free=stock.filter(x=>!x.socketItemUid),used=stock.length-free.length;

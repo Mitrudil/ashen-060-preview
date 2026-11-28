@@ -9,6 +9,6 @@ for(const fam of families){
  assert.notDeepEqual(c.bonuses,d.bonuses);assert(c.simulated&&d.simulated);
 }
 assert.throws(()=>S.evaluate('nieznana',[]));
-const code=fs.readFileSync(path.join(__dirname,'../js/game.js'),'utf8');const index=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert(code.includes('Symulacja aktualnego wyposażenia'));assert(code.includes('nieaktywne w walce'));assert(index.indexOf('ashen-249-resonance.js')<index.indexOf('./js/game.js'));
+const code=fs.readFileSync(path.join(__dirname,'../js/game.js'),'utf8');const index=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert(code.includes('Symulacja aktualnego wyposażenia'));assert(code.includes('testowo aktywne tylko w lokalnych walkach PvE'));assert(index.indexOf('ashen-249-resonance.js')<index.indexOf('./js/game.js'));
 const bonusCode=fs.readFileSync(path.join(__dirname,'../js/ashen-060-bonuses.js'),'utf8');assert(!bonusCode.includes('Ashen249Resonance'));
 console.log('PASS 249: tier 0/3/6, unique names, 8 families, preview only, no double stack');

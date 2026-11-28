@@ -1,0 +1,37 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+const P=require('../js/ashen-250-resonance-pve.js'),S=require('../js/ashen-249-resonance.js');
+const cat=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ashen-060-katalog.json'),'utf8')).artifact_effects;
+const familyNames=family=>[...new Set(cat.filter(x=>x.family===family).map(x=>x.artifact))];
+const generate=familyNames('Niszczycielski').map((name,i)=>({name,socketItemUid:'item'+i}));
+assert.equal(Object.keys(P.snapshot(generate,[],cat,S)).length,0,'Magazyn nie aktywuje rezonansu');
+assert.equal(Object.keys(P.snapshot(generate,['item0','item1'],cat,S)).length,0,'Dwa artefakty to za mało');
+const three=P.snapshot(generate,['item0','item1','item2'],cat,S);
+assert.equal(three.Niszczycielski,3);assert.equal(P.weapon(three,S,'melee1').damagePct,4);
+assert.equal(P.weapon(three,S,'melee1').accuracy,2);
+assert.equal(P.weapon(three,S,'firearm1').damagePct,0,'Nieodpowiednia broń nie dostaje bonusu');
+const six=P.snapshot(generate,generate.map(x=>x.socketItemUid),cat,S);
+assert.equal(six.Niszczycielski,6);assert.equal(P.weapon(six,S,'melee1').damagePct,9,'Progi 3/6 i 6/6 nie sumują się');
+const duplicates=[{name:generate[0].name,socketItemUid:'i1'},{name:generate[0].name,socketItemUid:'i2'},{name:generate[1].name,socketItemUid:'i3'}];
+assert.equal(P.snapshot(duplicates,['i1','i2','i3'],cat,S).Niszczycielski,undefined,'Duplikat nie jest innym artefaktem');
+const make=(fam,n)=>familyNames(fam).slice(0,n).map((name,i)=>({name,socketItemUid:fam+i}));
+for(const fam of Object.keys(S.catalog)){
+ const stock=make(fam,6);const t=P.snapshot(stock,stock.map(x=>x.socketItemUid),cat,S);assert.equal(t[fam],6);
+ const low=P.snapshot(stock,stock.slice(0,3).map(x=>x.socketItemUid),cat,S);assert.equal(low[fam],3);
+}
+const iron=make('Żelazny',3),ironTier=P.snapshot(iron,iron.map(x=>x.socketItemUid),cat,S);
+assert.equal(P.defense(ironTier,S,['melee2']).hp,20);assert.equal(P.defense(ironTier,S,['firearm1']).hp,0);
+const shield=make('Osłonowy',6),sTier=P.snapshot(shield,shield.map(x=>x.socketItemUid),cat,S);
+assert.equal(P.defense(sTier,S,[]).hp,20);assert.equal(P.defense(sTier,S,[]).armor,10);
+const tech=make('Techniczny',6),techTier=P.snapshot(tech,tech.map(x=>x.socketItemUid),cat,S);
+assert.equal(P.weapon(techTier,S,'firearm2').penetration,5);assert.equal(P.weapon(techTier,S,'melee2').penetration,0);
+const ref=make('Refleksyjny',3),refTier=P.snapshot(ref,ref.map(x=>x.socketItemUid),cat,S);
+assert.equal(P.defense(refTier,S,['firearm1']).dodge,2);assert.equal(P.defense(refTier,S,['melee2']).dodge,0);
+const nom=make('Nomadyczny',6),nomTier=P.snapshot(nom,nom.map(x=>x.socketItemUid),cat,S);
+assert.equal(P.defense(nomTier,S,[]).hp,0);assert.equal(P.weapon(nomTier,S,'firearm2').damagePct,0);
+const code=fs.readFileSync(path.join(__dirname,'../js/game.js'),'utf8');const index=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+assert(code.includes('options.combat060===true&&!options.testSnapshot'),'Brak izolacji od PvP i snapshotów testowych');
+assert(code.includes('resonanceEngine.weapon(pveResonance'),'Brak integracji trafienia');
+assert(code.includes('const pveDefense='),'Brak integracji obrony');
+assert(!code.includes('Ashen250PveResonance.computeLoot'),'Łupy nie mogą być zmieniane');
+assert(index.indexOf('ashen-250-resonance-pve.js')<index.indexOf('./js/game.js'));
+console.log('PASS 250: 8 rodzin, unikalne 3/6, kategorie broni, obrona, brak zmian PvP i łupów');
