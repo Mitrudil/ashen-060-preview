@@ -43,5 +43,5 @@ assert(game.includes('initial({testMode:true,luck:explorationStats().luck})'));
 assert(game.includes('initial({luck:explorationStats().luck})'));
 assert(game.includes('zone239Write(session);if(session.reward)zone244Claim(session)'));
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-assert(html.includes('Build 245')&&html.indexOf('ashen-zone-244-rewards.js')<html.indexOf('game.js?v=245'));
+assert(html.includes('Build 246')&&html.indexOf('ashen-zone-244-rewards.js')<html.indexOf('game.js?v=246'));
 console.log('PASS 244: 3 finales, random chance & duplicates, one-time reward, inventory stock, restore and test-mode no rewards');

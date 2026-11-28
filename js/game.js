@@ -4199,6 +4199,16 @@ if(page==='zone'&&zone245CanRewardTest()){
   testDetails.insertAdjacentElement('afterend',p);p.insertAdjacentElement('afterend',b);
  }
 }
+if(page==='zone'&&zone246CanRewardTest()){
+ const panel=document.querySelector('.ashen-zone-239');
+ const testDetails=panel?.querySelector('details:last-of-type');
+ if(testDetails){
+  const p=document.createElement('p');p.className='small muted';
+  p.textContent='Jednorazowe wejscie Build 246 z prawdziwymi nagrodami etapowymi. Nie resetuje postaci. Po zakonczeniu ruszy normalne 72-godzinne odliczanie.';
+  const b=document.createElement('button');b.type='button';b.setAttribute('data-zone-reward-test-246','1');
+  b.textContent='Testuj nowe nagrody 246 (jednorazowo)';testDetails.appendChild(p);testDetails.appendChild(b);
+ }
+}
 const preview060Restored=document.querySelector('.ashen-060-in-item');
 if(preview060WasOpen&&preview060Restored)preview060Restored.open=true;
 const preview060RestoredDialog=document.querySelector('.ashen-item-modal');
@@ -4227,6 +4237,22 @@ function zone245StartRewardTest(){
  catch(err){localStorage.removeItem(key);throw err;}
 }
 
+// Build 246: jednorazowa przygoda z nagrodami do testu nowego rozliczenia.
+function zone246UnlockKey(){return zone239StorageKey()+':reward-test-unlock-246'}
+function zone246CanRewardTest(){
+ const run=zone239Read();
+ return !!run&&run.status==='finished'&&!window.AshenZone239.resonator(run).ready&&!localStorage.getItem(zone246UnlockKey());
+}
+function zone246StartRewardTest(){
+ if(!zone246CanRewardTest())throw Error('Jednorazowy test nagrod Build 246 jest juz wykorzystany albo niedostepny.');
+ if(state.mission)throw Error('Nie mozna wejsc do Strefy podczas wyprawy.');
+ const previous=zone239Read();
+ if(previous?.reward&&!previous.rewardClaimed)zone244Claim(previous);
+ const key=zone246UnlockKey();localStorage.setItem(key,'used');
+ if(localStorage.getItem(key)!=='used')throw Error('Nie mozna zapisac zuzycia testowego wejscia 246.');
+ try{zone239Write(window.AshenZone239.initial({luck:explorationStats().luck}));}
+ catch(err){localStorage.removeItem(key);throw err;}
+}
 function zone239Write(x){const key=zone239StorageKey();const str=JSON.stringify(x);localStorage.setItem(key,str);if(localStorage.getItem(key)!==str)throw Error('Nie udało się potwierdzić zapisu sceny Strefy.')}
 // Build 244: rozliczenie tylko raz. Idempotencja w tym samym zapisie co magazyn i zlom.
 // Po awarii pomiedzy zapisem wyniku a nadaniem nagrody mozna bezpiecznie wznowic.
@@ -4246,6 +4272,27 @@ function zone244Claim(session){
    if(!stock.some(x=>x.uid===uid))stock.push({uid,name:canonical,socketItemUid:null,zoneRewardId:id});
   }
   state.scrap=Math.max(0,Number(state.scrap)||0)+Math.max(0,Math.floor(Number(reward.scrap)||0));
+  if(reward.lootVersion===246){
+   if(!Array.isArray(reward.sceneFinds)||reward.sceneFinds.length!==5)throw Error('Niepełny zapis nagród etapowych.');
+   const allowed=['czesci','elektronika','medical'];
+   state.materials=state.materials||{};
+   for(const [key,qty] of Object.entries(reward.materials||{})){
+    if(!allowed.includes(key)||!Number.isSafeInteger(qty)||qty<0||qty>40)throw Error('Nieprawidłowa nagroda materiałowa.');
+    state.materials[key]=Math.max(0,Number(state.materials[key])||0)+qty;
+   }
+   const stageScrap=reward.stageScrap,xp=reward.xp;
+   if(!Number.isSafeInteger(stageScrap)||stageScrap<0||stageScrap>100||!Number.isSafeInteger(xp)||xp<0||xp>500)throw Error('Nieprawidłowy rozmiar nagrody Strefy.');
+   state.scrap+=stageScrap;state.xp=Math.max(0,Number(state.xp)||0)+xp;
+   const storyId='martwy-las:ostatni-sygnal';
+   const first=Array.isArray(state.zoneStoryFirstCompletionIds)?state.zoneStoryFirstCompletionIds:[];
+   if(!first.includes(storyId)){
+    state.zoneStoryFirstCompletionIds=[...first,storyId];
+    state.scrap+=15;state.materials.czesci=(Number(state.materials.czesci)||0)+6;state.xp+=80;
+    reward.firstCompletion=true;
+   }else reward.firstCompletion=false;
+   levelUp();
+  }
+
   state.zoneRewardClaimIds=[...claimed,id].slice(-256);
   const encoded=JSON.stringify(state);
   localStorage.setItem(KEY,encoded);
@@ -4280,7 +4327,8 @@ function updateZoneResonator(){
 
 function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-zone-start')){try{const current=zone239Read();if(!current||window.AshenZone239.resonator(current).ready)zone239Write(window.AshenZone239.initial({luck:explorationStats().luck}));else throw Error('Rezonator nadal się regeneruje lub przygoda trwa.');render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-reward-test')){try{zone245StartRewardTest();render()}catch(err){message=err.message;render()}return}
-if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie można testować Strefy podczas wyprawy.');const session=zone239Read();window.AshenZone239.pick(session,Number(b.dataset.zoneChoice),attrs());if(session.status==='finished'&&session.rewardSystemVersion===244&&!session.testMode){const catalog=window.Ashen060Catalog?.artifact_effects||[];const names=[...new Set(catalog.map(x=>x.artifact).filter(Boolean))];window.AshenZone244Rewards.roll(session,{names});}zone239Write(session);if(session.reward)zone244Claim(session);render()}catch(err){message=err.message;render()}return}
+if(b.hasAttribute('data-zone-reward-test-246')){try{zone246StartRewardTest();render()}catch(err){message=err.message;render()}return}
+if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie można testować Strefy podczas wyprawy.');const session=zone239Read();window.AshenZone239.pick(session,Number(b.dataset.zoneChoice),attrs());if(session.status==='finished'&&session.rewardSystemVersion===244&&!session.testMode){const catalog=window.Ashen060Catalog?.artifact_effects||[];const names=[...new Set(catalog.map(x=>x.artifact).filter(Boolean))];window.AshenZone244Rewards.roll(session,{names});window.AshenZone244Rewards.enrich(session);}zone239Write(session);if(session.reward)zone244Claim(session);render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-fight')){try{
  if(state.mission)throw Error('Nie można walczyć w Strefie podczas wyprawy.');
  const session=zone239Read();if(session?.status!=='combat_pending')throw Error('Walka już została rozstrzygnięta.');
