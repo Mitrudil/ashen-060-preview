@@ -173,18 +173,26 @@ const artifactItems=[
  {id:'ash_shard',name:'Odłamek ciszy',flavor:'Ciemny kryształ, przy którym odgłosy broni brzmią jak dalekie echo.',slot:'extra',artifact:true,artifactSet:'guardian',artifactLuck:1,artifactSign:'◇',bonus:{per:1}}
 ];
 items.push(...artifactItems);
+// Build 238: stary rezonans liczymy WYŁĄCZNIE z osobnych fizycznych artefaktów
+// osadzonych w gniazdach faktycznie ZAŁOŻONYCH przedmiotów. Oryginalne
+// prefiksy/sufiksy zachowujemy jako dane, bez nadawania nowych losowych efektów.
 function resonanceResults(){
- const worn=['extra','extra2','extra3'].map(slot=>({slot,inst:instance(state.equip?.[slot])})).filter(x=>x.inst&&def(x.inst)?.artifact);
+ const stock=Array.isArray(state.artifactStock)?state.artifactStock:[];
+ const seen=new Set(),worn=[];
+ for(const [slot,itemUid] of Object.entries(state.equip||{})){
+  const equipped=instance(itemUid);
+  if(!equipped||!Array.isArray(equipped.socketArtifactUids))continue;
+  for(const uid of equipped.socketArtifactUids){
+   if(typeof uid!=='string'||seen.has(uid))continue;
+   const token=stock.find(x=>x.uid===uid&&x.socketItemUid===itemUid);
+   if(!token?.legacyItem)continue;
+   seen.add(uid);
+   worn.push({slot,inst:{...token.legacyItem,uid:token.uid},token});
+  }
+ }
  const results=[];
  for(const [kind,configs] of [['prefix',ARTIFACT_PREFIX_SETS],['suffix',ARTIFACT_SUFFIX_SETS]])for(const [id,config] of Object.entries(configs)){
-  // Liczymy fizyczne egzemplarze (UID), nie typy przedmiotów (id).
-  // Każdy slot jest odwiedzany raz; zabezpieczenie UID chroni przed
-  // ewentualnym błędnym zapisem tego samego egzemplarza w kilku slotach.
-  const seenUids=new Set(),members=[];
-  for(const row of worn){
-   if(row.inst[kind]!==id||seenUids.has(row.inst.uid))continue;
-   seenUids.add(row.inst.uid);members.push(row);
-  }
+  const members=worn.filter(x=>x.inst[kind]===id);
   if(members.length)results.push({id,kind,config,members,count:members.length,active:members.length>=3});
  }
  return results;
@@ -196,8 +204,8 @@ function resonanceBonuses(){
 }
 function resonancePanel(){
  const results=resonanceResults();
- const cards=results.map(r=>`<div class="ashen-resonance-card ${r.active?'active':'pending'}"><div class="ashen-resonance-title"><strong>${r.kind==='prefix'?'Prefiks':'Sufiks'}: ${escape(r.config.name)}</strong><span>${r.count}/3 · ${r.active?'AKTYWNY':'NIEAKTYWNY'}</span></div><p class="small ${r.active?'good':'muted'}">${escape(r.config.description)}</p><div class="ashen-resonance-members">${r.members.map(m=>`<span class="found">✓ ${escape(statsOf(m.inst).name)} · ${escape(slotLabels[m.slot])}</span>`).join('')}</div>${r.active?'':'<div class="small muted">Brakuje '+(3-r.count)+' '+(3-r.count===1?'założonego artefaktu':'założonych artefaktów')+' z tym modyfikatorem.</div>'}</div>`).join('');
- return `<section class="ashen-resonance-panel"><h3>◈ Rezonans artefaktów</h3><p class="small muted">Każdy artefakt ma bazowe Szczęście i może mieć prefiks oraz sufiks. <strong>Trzy założone egzemplarze artefaktów z tym samym prefiksem lub sufiksem (mogą być identyczne)</strong> uruchamiają bonus zestawu. Zwykłe akcesoria nie liczą się do rezonansu. Prefiks i sufiks to dwa niezależne typy zestawów.</p><div class="ashen-resonance-grid">${cards||'<div class="ashen-resonance-card">Załóż artefakt z modyfikatorem, aby zobaczyć postęp zestawu.</div>'}</div></section>`;
+ const cards=results.map(r=>`<div class="ashen-resonance-card ${r.active?'active':'pending'}"><div class="ashen-resonance-title"><strong>${r.kind==='prefix'?'Prefiks':'Sufiks'}: ${escape(r.config.name)}</strong><span>${r.count}/3 · ${r.active?'AKTYWNY':'NIEAKTYWNY'}</span></div><p class="small ${r.active?'good':'muted'}">${escape(r.config.description)}</p><div class="ashen-resonance-members">${r.members.map(m=>`<span class="found">✓ ${escape(statsOf(m.inst).name)} · ${escape(slotLabels[m.slot]||m.slot)}</span>`).join('')}</div>${r.active?'':'<div class="small muted">Brakuje '+(3-r.count)+' '+(3-r.count===1?'założonego artefaktu':'założonych artefaktów')+' z tym modyfikatorem.</div>'}</div>`).join('');
+ return `<section class="ashen-resonance-panel"><h3>◈ Rezonans artefaktów</h3><p class="small muted">Każdy artefakt ma bazowe Szczęście i może mieć prefiks oraz sufiks. <strong>Trzy różne osadzone egzemplarze starych artefaktów w założonym wyposażeniu, z tym samym prefiksem lub sufiksem</strong> uruchamiają bonus zestawu. Zwykłe akcesoria nie liczą się do rezonansu. Prefiks i sufiks to dwa niezależne typy zestawów.</p><div class="ashen-resonance-grid">${cards||'<div class="ashen-resonance-card">Osadź posiadane artefakty z modyfikatorami w założonych przedmiotach, aby zobaczyć postęp rezonansu.</div>'}</div></section>`;
 }
 function artifactDetailPanel(inst){
  const d=def(inst);if(!d?.artifact)return '';
@@ -797,6 +805,20 @@ const COMMON_EXPEDITION_DROPS=(()=>{
  if(pool.length!==100)throw Error('ASHEN 226: nie odnaleziono wszystkich 100 przedmiotow w silniku.');
  return pool;
 })();
+// Build 238: rzadkie, niezależne znalezisko artefaktu. Zwykłe dropy 100 baz
+// nie są zastępowane. Szanse są testowe, a nie ostatecznym balansem.
+const EXPEDITION_ARTIFACT_CHANCE=Object.freeze({ruins:0.03,hospital:0.05,outpost:0.07});
+function rollExpeditionArtifact(loc,rng=Math.random){
+ const chance=EXPEDITION_ARTIFACT_CHANCE[loc?.id]||0;
+ if(!chance||rng()>=chance)return null;
+ const names=[...new Set((window.Ashen060Catalog?.artifact_effects||[]).map(x=>x.artifact).filter(x=>typeof x==='string'&&x.trim()))];
+ if(!names.length)return null;
+ const name=names[Math.min(names.length-1,Math.floor(rng()*names.length))];
+ const token={uid:'artifact238:'+Date.now()+':'+Math.random().toString(36).slice(2,11),name,socketItemUid:null,source:'expedition',sourceLocation:loc.id};
+ const stock=state.artifactStock||(state.artifactStock=[]);
+ stock.push(token);
+ return {uid:token.uid,name:token.name};
+}
 function pickLoot(loc,exploration=null,forcedCount=null){
  // Tylko zwycięstwa: jeden pewny przedmiot; maksymalnie trzy przedmioty lacznie z eksploracja, anomalia i towarzyszem.
   // Ruiny: drugi 10%, trzeci 1%; szpital: 14% / 2%; posterunek: 18% / 3%.
@@ -2625,6 +2647,7 @@ function finish(){
   }}
   if(result.won&&rolledLoot.length<3&&companionId()==='dog'&&Math.random()<petPower('dog')/100){const extra=pickLoot(loc,{...exploration,success:false},1)[0];if(extra)rolledLoot.push(extra)}
  const drops=rolledLoot.map(x=>({uid:x.uid,id:x.id,prefix:x.prefix||null,suffix:x.suffix||null,name:statsOf(x).name,rarity:statsOf(x).rarity,slot:statsOf(x).slot,details:statDetails(statsOf(x)),effects:statsOf(x).effects}));
+ const artifactFind=result.won?rollExpeditionArtifact(loc):null;
  // Komponenty nie zaliczaja sie do limitu 1–3 przedmiotow ekwipunku po zwyciestwie.
  // Podczas testów również przegrana walka może przynieść znalezisko.
  // Przetrwanie: proste znaleziska na każdej wyprawie, bez głodu i opłat pasywnych.
@@ -2645,7 +2668,7 @@ function finish(){
   state.scrap+=change;scrap+=change;anomaly.scrap=change;
  }
  if(result.won)gainCompanionXp(({ruins:12,hospital:23,outpost:35}[loc.id]||12));
- let levels=levelUp();const story=storyForExpedition(loc.id);state.reports.unshift({story:story.text,storyId:story.id,at:new Date().toLocaleString('pl-PL'),location:loc.name,enemy:enemy.name,...result,xp,scrap,drops,special,supplies,exploration,anomaly,drop:drops[0]?.name||null,dropRarity:drops[0]?.rarity||null,levels});
+ let levels=levelUp();const story=storyForExpedition(loc.id);state.reports.unshift({story:story.text,storyId:story.id,at:new Date().toLocaleString('pl-PL'),location:loc.name,enemy:enemy.name,...result,xp,scrap,drops,artifactFind,special,supplies,exploration,anomaly,drop:drops[0]?.name||null,dropRarity:drops[0]?.rarity||null,levels});
  state.reports=state.reports.slice(0,30);state.mission=null;state.missionOutcomePending=true;
  message=''; // Pełny raport wyprawy jest już wyświetlany na ekranie Wypraw.
  save()
@@ -3088,7 +3111,7 @@ function changeSocketArtifact(uid,value,mode){
 function artifactStockPanel(){
  const stock=state.artifactStock||[],free=stock.filter(x=>!x.socketItemUid),used=stock.length-free.length;
  const entries=stock.map(x=>`<div class="ashen-socket-lab-row"><span>✧ ${escape(x.name)}${x.legacyItem?' · archiwalny egzemplarz':''}</span><span class="small muted">${x.socketItemUid?'Osadzony':artifactCatalogName(x.name)?'Gotowy do osadzenia':'Zachowany · oczekuje na zgodny efekt'}</span></div>`).join('');
- return `<section class="panel section" aria-label="Magazyn artefaktów"><h3>✧ Magazyn artefaktów</h3><p class="small muted">Posiadane: ${stock.length} · wolne: ${free.length} · osadzone: ${used}. Stare egzemplarze zachowują pełne dane, ale bez zgodnego efektu nie można ich automatycznie osadzić. Rezonans starych akcesoriów wymaga osobnego przeniesienia do gniazd.</p>${entries||'<p class="muted small">Magazyn jest pusty. W Build 237 dostępny jest próbny przydział do testowania.</p>'}<div class="actions"><button data-artifact-test-pack ${state.artifactTestPack237?'disabled':''}>Przydziel 3 artefakty testowe (jednorazowo)</button></div></section>`;
+ return `<section class="panel section" aria-label="Magazyn artefaktów"><h3>✧ Magazyn artefaktów</h3><p class="small muted">Posiadane: ${stock.length} · wolne: ${free.length} · osadzone: ${used}. Stare egzemplarze zachowują pełne dane, ale bez zgodnego efektu nie można ich automatycznie osadzić. Rezonans starych akcesoriów wymaga osobnego przeniesienia do gniazd.</p>${entries||'<p class="muted small">Magazyn jest pusty. Artefakty można znaleźć podczas zwycięskich wypraw. Nadal dostępny jest jednorazowy pakiet testowy.</p>'}<div class="actions"><button data-artifact-test-pack ${state.artifactTestPack237?'disabled':''}>Przydziel 3 artefakty testowe (jednorazowo)</button></div></section>`;
 }
 function grantArtifactTestPack(){
  if(state.artifactTestPack237)throw Error('Próbny przydział został już wykorzystany.');
@@ -3111,7 +3134,7 @@ function item060PreviewPanel(inst,targetSlot){
  const ownedCapacity=Number.isInteger(inst.socketCapacity)?inst.socketCapacity:null;
  const status=ownedCapacity===null?'Ten przedmiot pochodzi ze starego systemu. Liczba gniazd nie została wylosowana; nie nadajemy jej automatycznie.':ownedCapacity===0?'Brak gniazd artefaktów':`Gniazda artefaktów: ${ownedCapacity}/3 · osadzone artefakty: ${(inst.socketedArtifacts||[]).length}.`;
  if(ownedCapacity===0)return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — gniazda artefaktów</summary><p class="small muted">Brak gniazd artefaktów</p><p class="small muted">Ten przedmiot nie ma gniazd. Nie można w nim osadzać artefaktów. Podgląd dostępnych efektów dotyczy tylko przedmiotów z gniazdami.</p></details>`;
- return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — podgląd artefaktów w tym przedmiocie</summary><p class="small muted">${escape(status)}</p><p class="small muted">Wybierz artefakt, aby sprawdzić planowany efekt w kategorii <strong>${escape(engine.SLOT_CATEGORY[adapter.categoryOfGameSlot(slot)]||'wyposażenia')}</strong>. To tylko odczyt z nowego modułu — nie osadza artefaktu, nie zmienia statystyk ani zapisu.</p><div class="actions" style="flex-wrap:wrap">${choices.map(x=>`<button type="button" data-ashen060-artifact="${escape(x.name)}" class="${x.name===selected.name?'primary':''}">${escape(x.name)}</button>`).join('')}</div><p style="margin:12px 0 4px"><strong>${escape(selected.name)} · ${escape(selected.family)}</strong></p><p class="small">Efekt: <strong>${desc(selected)}</strong>${selected.condition?` · ${escape(selected.condition)}`:''}</p>${ownedCapacity>0?`<section class="ashen-socket-lab"><strong>Osadzanie z magazynu · Build 237</strong><p class="small muted">Możesz osadzać tylko posiadane i wolne egzemplarze zgodne z kategorią gniazda. Wybór powyżej to wyłącznie podgląd efektu.</p><div class="actions">${(state.artifactStock||[]).filter(x=>!x.socketItemUid&&choices.some(c=>c.name===artifactCatalogName(x.name))).map(x=>`<button type="button" data-socket-install="${escape(inst.uid)}" data-socket-name="${escape(x.uid)}" ${state.mission||((inst.socketedArtifacts||[]).length>=ownedCapacity)?'disabled':''}>Osadź: ${escape(x.name)}</button>`).join('')||'<span class="small muted">Brak zgodnych artefaktów w magazynie.</span>'}</div>${(inst.socketedArtifacts||[]).map((name,i)=>`<div class="ashen-socket-lab-row"><span>${escape(name)}</span><button type="button" data-socket-remove="${escape(inst.uid)}" data-socket-index="${i}" ${state.mission?'disabled':''}>Wyjmij</button></div>`).join('')}</section>`:''}<p class="small muted">Zdobywanie artefaktów i rezonanse zostaną dopracowane w kolejnym etapie. PvP bez zmian.</p></details>`;
+ return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — podgląd artefaktów w tym przedmiocie</summary><p class="small muted">${escape(status)}</p><p class="small muted">Wybierz artefakt, aby sprawdzić planowany efekt w kategorii <strong>${escape(engine.SLOT_CATEGORY[adapter.categoryOfGameSlot(slot)]||'wyposażenia')}</strong>. To tylko odczyt z nowego modułu — nie osadza artefaktu, nie zmienia statystyk ani zapisu.</p><div class="actions" style="flex-wrap:wrap">${choices.map(x=>`<button type="button" data-ashen060-artifact="${escape(x.name)}" class="${x.name===selected.name?'primary':''}">${escape(x.name)}</button>`).join('')}</div><p style="margin:12px 0 4px"><strong>${escape(selected.name)} · ${escape(selected.family)}</strong></p><p class="small">Efekt: <strong>${desc(selected)}</strong>${selected.condition?` · ${escape(selected.condition)}`:''}</p>${ownedCapacity>0?`<section class="ashen-socket-lab"><strong>Osadzanie z magazynu · Build 237</strong><p class="small muted">Możesz osadzać tylko posiadane i wolne egzemplarze zgodne z kategorią gniazda. Wybór powyżej to wyłącznie podgląd efektu.</p><div class="actions">${(state.artifactStock||[]).filter(x=>!x.socketItemUid&&choices.some(c=>c.name===artifactCatalogName(x.name))).map(x=>`<button type="button" data-socket-install="${escape(inst.uid)}" data-socket-name="${escape(x.uid)}" ${state.mission||((inst.socketedArtifacts||[]).length>=ownedCapacity)?'disabled':''}>Osadź: ${escape(x.name)}</button>`).join('')||'<span class="small muted">Brak zgodnych artefaktów w magazynie.</span>'}</div>${(inst.socketedArtifacts||[]).map((name,i)=>`<div class="ashen-socket-lab-row"><span>${escape(name)}</span><button type="button" data-socket-remove="${escape(inst.uid)}" data-socket-index="${i}" ${state.mission?'disabled':''}>Wyjmij</button></div>`).join('')}</section>`:''}<p class="small muted">Artefakty wypadają rzadko na zwycięskich wyprawach. Rezonans prefiksów i sufiksów dotyczy osadzonych, archiwalnych egzemplarzy z zachowanymi modyfikatorami. PvP bez zmian.</p></details>`;
 }
 // Build 233: read-only icons for actual socket contents, never simulated artifact choices.
 function artifactSocketVisuals(inst,large=false){
@@ -3779,8 +3802,8 @@ function specialLoot(r){const p=r?.special||{},s=r?.supplies||{};
  const rare=(p.cores||p.schematics)?`<div class="notice" style="margin-top:10px"><strong>Rzadkie znaleziska:</strong> ${[p.cores?`⚙ Rdzeń technologiczny × ${p.cores}`:'',p.schematics?`📜 Schemat przedwojenny × ${p.schematics}`:''].filter(Boolean).join(' · ')}</div>`:'';
  const supplies=[s.food?`🥫 Żywność × ${s.food}`:'',s.water?`💧 Czysta woda × ${s.water}`:'',s.medical?`✚ Zaopatrzenie medyczne × ${s.medical}`:''].filter(Boolean);
  return rare+(supplies.length?`<div class="notice" style="margin-top:7px"><strong>Zaopatrzenie z wyprawy:</strong> ${supplies.join(' · ')}</div>`:'');}
-function foundLootPreview(r){return `<div class="panel section"><h3 style="color:var(--gold)">Ostatnia ukończona wyprawa: ${escape(r.location)}</h3><p class="small muted">${escape(r.at)}</p><p>Znalazłeś:</p>${(r.drops||[]).map(x=>`<details class="loot-detail"><summary><div class="loot-row">${lootDetailButton(x)}<div>${lootDetailName(x)}${lootAffixBadges(x)}<div class="small muted">Kliknij, aby rozwinąć opis</div></div></div></summary><div class="small muted">${escape(x.details||'Brak zapisanych parametrów')} · ${escape(x.slot?slotName(x.slot):'')}${(x.effects||[]).map(e=>`<div>↳ ${escape(e.name)}: ${escape(e.description)}</div>`).join('')}</div></details>`).join('')||'<p class="muted">Sprawdź starszy raport w zakładce Raporty.</p>'}${specialLoot(r)}<button data-page="inventory">Przejdź do ekwipunku</button></div>`}
-function reports(){const ah=arenaData().history;return section('Raporty walk',`<div class="arena-report-links"><h3>⚔ Raporty Starć (${ah.length})</h3><p class="small muted">Szczegółowy przebieg i podsumowanie obrażeń znajdziesz w zakładce Starcia.</p>${ah.slice(0,5).map(x=>`<div class="arena-report-brief"><span class="${arenaOutcomeClass(x)}">${arenaOutcomeSymbol(x)} ${arenaOutcomeLabel(x)} · Etap ${x.stage} — ${escape(x.name)}</span><span>${escape(x.at)}</span></div>`).join('')||'<p class="muted small">Nie rozegrano jeszcze starcia.</p>'}<button data-page="arena">Przejdź do Starć</button></div>`+(state.reports.length?`<div class="stack">${state.reports.map((r,i)=>`<div class="panel"><div class="row wrap"><strong class="${r.won?'good':'bad'}">${r.won?'ZWYCIĘSTWO':'PORAŻKA'} · ${escape(r.location)}</strong><span class="small muted">${escape(r.at)}</span></div><p>Przeciwnik: ${escape(r.enemy)}</p>${damageReportPanel(r)}${anomalyReportPanel(r)}${explorationReportPanel(r)}<p class="tag">+${r.xp} XP · +${r.scrap} złomu ${r.levels?'· Awans: +'+r.levels+' poziom':''}</p>${specialLoot(r)}<div class="small"><strong>Znalazłeś (${r.drops?.length||Number(!!r.drop)}):</strong><div class="loot-list">${(r.drops|| (r.drop?[{name:r.drop,rarity:r.dropRarity}]:[])).map(x=>`<details class="loot-detail"><summary><div class="loot-row">${lootDetailButton(x)}<div>${lootDetailName(x)}${lootAffixBadges(x)}<div class="small muted">Kliknij, aby rozwinąć opis</div></div></div></summary><div class="small muted">${escape(x.details||((x.uid&&instance(x.uid))?statDetails(statsOf(instance(x.uid))):'Szczegóły nie były zapisywane w tej wersji raportu.'))}<br>Rzadkość: ${escape(x.rarity||'Nieznana')} · ${escape(x.slot?slotName(x.slot):'Przedmiot ze starszego raportu')}${(x.effects||[]).map(e=>`<div>↳ ${escape(e.name)}: ${escape(e.description)}</div>`).join('')}</div></details>`).join('')||'Brak'}</div></div><details ${i===0?'open':''}><summary>Przebieg walki</summary>${r.lines.map(line=>`<div class="report small">${escape(line)}</div>`).join('')}</details></div>`).join('')}</div>`:'<div class="panel muted">Brak raportów. Wykonaj pierwszą wyprawę.</div>'))}
+function foundLootPreview(r){return `<div class="panel section"><h3 style="color:var(--gold)">Ostatnia ukończona wyprawa: ${escape(r.location)}</h3><p class="small muted">${escape(r.at)}</p><p>Znalazłeś:</p>${(r.drops||[]).map(x=>`<details class="loot-detail"><summary><div class="loot-row">${lootDetailButton(x)}<div>${lootDetailName(x)}${lootAffixBadges(x)}<div class="small muted">Kliknij, aby rozwinąć opis</div></div></div></summary><div class="small muted">${escape(x.details||'Brak zapisanych parametrów')} · ${escape(x.slot?slotName(x.slot):'')}${(x.effects||[]).map(e=>`<div>↳ ${escape(e.name)}: ${escape(e.description)}</div>`).join('')}</div></details>`).join('')||'<p class="muted">Sprawdź starszy raport w zakładce Raporty.</p>'}${r.artifactFind?`<div class="panel"><strong>✧ Znaleziono artefakt: ${escape(r.artifactFind.name)}</strong><p class="small muted">Przeniesiono do Magazynu artefaktów, nie zajmuje miejsca zwykłego łupu.</p></div>`:''}${specialLoot(r)}<button data-page="inventory">Przejdź do ekwipunku</button></div>`}
+function reports(){const ah=arenaData().history;return section('Raporty walk',`<div class="arena-report-links"><h3>⚔ Raporty Starć (${ah.length})</h3><p class="small muted">Szczegółowy przebieg i podsumowanie obrażeń znajdziesz w zakładce Starcia.</p>${ah.slice(0,5).map(x=>`<div class="arena-report-brief"><span class="${arenaOutcomeClass(x)}">${arenaOutcomeSymbol(x)} ${arenaOutcomeLabel(x)} · Etap ${x.stage} — ${escape(x.name)}</span><span>${escape(x.at)}</span></div>`).join('')||'<p class="muted small">Nie rozegrano jeszcze starcia.</p>'}<button data-page="arena">Przejdź do Starć</button></div>`+(state.reports.length?`<div class="stack">${state.reports.map((r,i)=>`<div class="panel"><div class="row wrap"><strong class="${r.won?'good':'bad'}">${r.won?'ZWYCIĘSTWO':'PORAŻKA'} · ${escape(r.location)}</strong><span class="small muted">${escape(r.at)}</span></div><p>Przeciwnik: ${escape(r.enemy)}</p>${damageReportPanel(r)}${anomalyReportPanel(r)}${explorationReportPanel(r)}<p class="tag">+${r.xp} XP · +${r.scrap} złomu ${r.levels?'· Awans: +'+r.levels+' poziom':''}</p>${r.artifactFind?`<p class="small">✧ Artefakt: <strong>${escape(r.artifactFind.name)}</strong> (magazyn artefaktów)</p>`:''}${specialLoot(r)}<div class="small"><strong>Znalazłeś (${r.drops?.length||Number(!!r.drop)}):</strong><div class="loot-list">${(r.drops|| (r.drop?[{name:r.drop,rarity:r.dropRarity}]:[])).map(x=>`<details class="loot-detail"><summary><div class="loot-row">${lootDetailButton(x)}<div>${lootDetailName(x)}${lootAffixBadges(x)}<div class="small muted">Kliknij, aby rozwinąć opis</div></div></div></summary><div class="small muted">${escape(x.details||((x.uid&&instance(x.uid))?statDetails(statsOf(instance(x.uid))):'Szczegóły nie były zapisywane w tej wersji raportu.'))}<br>Rzadkość: ${escape(x.rarity||'Nieznana')} · ${escape(x.slot?slotName(x.slot):'Przedmiot ze starszego raportu')}${(x.effects||[]).map(e=>`<div>↳ ${escape(e.name)}: ${escape(e.description)}</div>`).join('')}</div></details>`).join('')||'Brak'}</div></div><details ${i===0?'open':''}><summary>Przebieg walki</summary>${r.lines.map(line=>`<div class="report small">${escape(line)}</div>`).join('')}</details></div>`).join('')}</div>`:'<div class="panel muted">Brak raportów. Wykonaj pierwszą wyprawę.</div>'))}
 
 const HIDEOUT_OPTIONS={
  left:[['none','Puste'],['bed','Łóżko polowe'],['chair','Fotel'],['crate','Skrzynie']],
