@@ -4201,12 +4201,13 @@ if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie mo�
 if(b.hasAttribute('data-zone-fight')){try{
  if(state.mission)throw Error('Nie można walczyć w Strefie podczas wyprawy.');
  const session=zone239Read();if(session?.status!=='combat_pending')throw Error('Walka już została rozstrzygnięta.');
- const opts=[{name:'Nasłuchujący'},{name:'Zbieracz Echa'},{name:'Bagienny Tropiciel'}];
- const prev=session.history||[];const foe=opts[(prev.filter(x=>x.good).length+prev[2].option)%opts.length];
+ const event=window.AshenZone239.encounter(session);
  const l=Math.max(1,Number(state.level)||1),bonus=Math.min(3,Math.floor(l/12));
- const enemy={name:foe.name,hp:65+l*12,atk:[4+2*l+bonus,8+3*l+bonus],acc:7+l*1.1,dodge:4+l*.8,armor:3+l*1.4};
+ // Decyzje zmieniają trudność istniejącej walki, nie tworzymy nowego silnika.
+ const scale=event.dangerScale;
+ const enemy={name:event.name,hp:Math.round((65+l*12)*scale),atk:[Math.max(1,Math.round((4+2*l+bonus)*scale)),Math.max(2,Math.round((8+3*l+bonus)*scale))],acc:(7+l*1.1)*scale,dodge:(4+l*.8)*scale,armor:(3+l*1.4)*scale};
  const report=fight(enemy,{combat060:true,recordRounds:true});
- window.AshenZone239.setCombat(session,{...report,enemy:enemy.name});zone239Write(session);render();
+ window.AshenZone239.setCombat(session,{...report,enemy:enemy.name,advantage:event.advantage});zone239Write(session);render();
  }catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-reset')){try{localStorage.removeItem(zone239StorageKey());render()}catch(err){message=err.message;render()}return}
 if(b.dataset.mailFolder){mailFolder=b.dataset.mailFolder;mailOpenedId=null;mailComposeTo=null;render();return}if(b.dataset.mailCompose){mailComposeTo='';mailOpenedId=null;render();return}if(b.dataset.mailCancel){mailComposeTo=null;render();return}if(b.dataset.mailOpen){mailOpen(b.dataset.mailOpen);return}if(b.dataset.mailBack){mailOpenedId=null;render();return}if(b.dataset.mailReply){mailComposeTo=b.dataset.mailReply;mailOpenedId=null;render();return}if(b.dataset.mailSend){try{mailSend($('mail-target')?.value,$('mail-body')?.value)}catch(err){message=err.message;render()}return}if(b.dataset.mailReport){setPage('pvp');message='Historyczne raporty offline nie są już obsługiwane. Nowe raporty znajdziesz w PvP online.';render();return}if(b.dataset.devPanel){devPanelOpen=!devPanelOpen;if(!devPanelOpen)devPendingResetId=null;render();return}if(b.dataset.devCreate){try{devCreateProfile()}catch(err){message=err.message;render()}return}if(b.dataset.devSwitch){try{devSwitch(b.dataset.devSwitch)}catch(err){message=err.message;render()}return}if(b.dataset.devDelete){try{devDeleteProfile(b.dataset.devDelete)}catch(err){message=err.message;render()}return}if(b.dataset.devResetCancel){devPendingResetId=null;render();return}if(b.dataset.devResetConfirm){try{devResetTestProfile(b.dataset.devResetConfirm)}catch(err){message=err.message;render()}return}if(b.dataset.devReset){try{devAskResetTestProfile(b.dataset.devReset)}catch(err){message=err.message;render()}return}if(b.hasAttribute('data-artifact-test-pack')){try{grantArtifactTestPack()}catch(err){message=err.message}render();return}if(b.hasAttribute('data-socket-install')||b.hasAttribute('data-socket-remove')){

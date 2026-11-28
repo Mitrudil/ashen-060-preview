@@ -1,0 +1,23 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const base=path.join(__dirname,'..'),ctx={window:{},Date,Math};
+vm.runInNewContext(fs.readFileSync(path.join(base,'js/ashen-zone-239.js'),'utf8'),ctx);
+const z=ctx.window.AshenZone239;
+const attrs={per:19,int:19,dex:19,end:19};
+function play(options,rolls){const s=z.initial();for(let i=0;i<4;i++)z.pick(s,options[i],attrs,()=>rolls[i]);return s;}
+let trained=play([0,1,0,1],[.01,.01,.01,.01]);let reckless=play([2,0,1,2],[.99,.99,.99,.99]);
+assert.equal(trained.status,'combat_pending');assert.equal(reckless.status,'combat_pending');
+assert(z.encounter(trained).dangerScale<z.encounter(reckless).dangerScale);
+assert(z.html(trained).includes('przeciwnik:'));
+let keep=JSON.parse(JSON.stringify(trained));assert.equal(z.encounter(keep).dangerScale,z.encounter(trained).dangerScale);
+z.setCombat(trained,{won:true,enemy:z.encounter(trained).name,advantage:z.encounter(trained).advantage,lines:['Zwycięstwo']});
+z.pick(trained,1,attrs,()=>.01);assert.equal(trained.status,'finished');assert.equal(z.ending(trained).title,'Archiwum utraconych głosów');
+assert(z.html(trained).includes('Archiwum utraconych głosów'));
+z.setCombat(reckless,{won:false,enemy:z.encounter(reckless).name,lines:['Porażka']});
+z.pick(reckless,0,attrs,()=>.99);assert.equal(z.ending(reckless).title,'Powrót przez boczny korytarz');
+assert.throws(()=>z.pick(reckless,0,attrs));assert.throws(()=>z.setCombat(reckless,{won:true}));
+const game=fs.readFileSync(path.join(base,'js/game.js'),'utf8');const html=fs.readFileSync(path.join(base,'index.html'),'utf8');
+assert(game.includes('window.AshenZone239.encounter(session)'));
+assert(game.includes('const report=fight(enemy,{combat060:true,recordRounds:true});'));
+assert(html.includes('Build 240'));assert(html.includes('ashen-zone-239.js?v=240'));
+console.log('PASS 240: rozne efekty decyzji, warianty trudnosci walki, epilogi, trwały zapis, brak ponownego losowania');

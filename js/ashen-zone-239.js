@@ -21,9 +21,42 @@ function pick(session,option,stats,random=Math.random){
  else if(session.scene===5){session.status='finished';session.finishedAt=Date.now();}
  return outcome;
 }
+// ASHEN 240 — skutki wyborów i walka zależna od przebiegu, bez osobnego silnika PvE.
+function consequences(session){
+ const history=Array.isArray(session?.history)?session.history:[];
+ const score={wiedza:0,pomiar:0,ostroznosc:0,ryzyko:0};
+ for(const row of history){if(!row||!Object.hasOwn(score,row.category))continue;score[row.category]+=row.good?2:-1;}
+ const clues=history.filter(h=>h?.good&&(h.category==='wiedza'||h.category==='pomiar')).length;
+ const danger=history.filter(h=>h?.good===false).length+history.filter(h=>h?.category==='ryzyko').length;
+ return {score,clues,danger,good:history.filter(h=>h?.good).length};
+}
+function encounter(session){
+ if(!session||!Array.isArray(session.history)||session.history.length<4)throw Error('Nie zakończono czterech decyzji.');
+ const c=consequences(session);
+ const approaches=['Nasłuchujący','Zbieracz Echa','Bagienny Tropiciel'];
+ const last=session.history[3];
+ const index=(c.good+(session.history[2]?.option||0))%approaches.length;
+ const defense=last?.category==='ostroznosc'&&last.good?-.12:0;
+ const disruption=last?.category==='pomiar'&&last.good?-.12:0;
+ const ambush=last?.category==='ryzyko'&&!last.good?.15:0;
+ const dangerScale=Math.max(.82,Math.min(1.23,1+(c.danger-c.clues)*.035+defense+disruption+ambush));
+ return {name:approaches[index],dangerScale,clues:c.clues,danger:c.danger,advantage:dangerScale<.97?'Przygotowanie osłabia przeciwnika.':dangerScale>1.06?'Niebezpieczne podejście wzmacnia przeciwnika.':'Walka na równych warunkach.'};
+}
+function ending(session){
+ const c=consequences(session);
+ const final=session.history?.[4];
+ if(!final)return {title:'Historia jeszcze trwa',text:''};
+ if(session.combat?.won===false){
+  return {title:'Powrót przez boczny korytarz',text:'Nie zdołałeś pokonać przeciwnika. Znalazłeś jednak drogę odwrotu. Rezonator zachował część odczytów, a las wciąż powtarza twój głos.'};
+ }
+ if(final.option===2)return {title:'Ślad prowadzący donikąd',text:'Wycofałeś się z komory, zostawiając źródło sygnału za plecami. Pamiętasz drogę, ale na granicy lasu jej znaki są już inne.'};
+ if(final.option===1||c.clues>=3)return {title:'Archiwum utraconych głosów',text:'Wśród zapisów odnajdujesz ślady poprzednich badaczy. To nie jest skarb, na który liczyłeś, lecz wiedza może kiedyś okazać się cenniejsza.'};
+ if(final.good&&c.danger>=2)return {title:'Dotyk niemożliwego',text:'Przez chwilę trzymasz w dłoni coś, co przeczy prawom natury. Kiedy opuszczasz komorę, nie masz pewności, czy wyniosłeś przedmiot, czy tylko jego echo.'};
+ return {title:'Echo zamiast odpowiedzi',text:'Rezonator zapisuje sygnał, ale źródło znika w ciszy. Martwy Las pozwala ci odejść, jakby próbował zapamiętać, kim jesteś.'};
+}
 function setCombat(session,result){
  if(!session||session.status!=='combat_pending'||session.scene!==4||session.combat)throw Error('Walka została już rozstrzygnięta.');
- session.combat={won:!!result.won,enemy:result.enemy||'Nieznany przeciwnik',lines:(result.lines||[]).slice(0,200),report:result.damageSummary||null};
+ session.combat={won:!!result.won,enemy:result.enemy||'Nieznany przeciwnik',lines:(result.lines||[]).slice(0,200),report:result.damageSummary||null,advantage:result.advantage||''};
  session.status='playing';
  // Porażka krytyczna nie jest jeszcze zdefiniowana; etap 5 pozostaje możliwy po każdej porażce.
  return session;
@@ -33,9 +66,11 @@ function html(session){
  const n=session.status==='combat_pending'?3:Math.min(4,session.scene),scene=scenes[n],done=session.status==='finished';
  const records=session.history.map((h,i)=>`<details><summary>${i+1}. ${esc(scenes[i].name)} — ${String.fromCharCode(65+h.option)}</summary><p>${esc(scenes[i].choices[h.option][0])}</p><p class="muted">${esc(h.text)}</p></details>`).join('');
  const progress=Array.from({length:5},(_,i)=>`<span class="ashen-zone-step ${i<session.history.length?'done':i===session.scene?'current':''}"></span>`).join('');
+ const effects=consequences(session);const battle=session.status==='combat_pending'?encounter(session):null;
+ const trail=`<div class="small muted">Ślady: ${effects.clues} · Zagrożenia: ${effects.danger} · Wyniki decyzji zapisane</div>`;
  const combat=session.combat?`<details class="panel" ${session.status==='combat_pending'?'':'open'}><summary>⚔ Raport walki — ${esc(session.combat.enemy)} · ${session.combat.won?'ZWYCIĘSTWO':'PORAŻKA'}</summary>${session.combat.lines.map(x=>`<div class="small report">${esc(x)}</div>`).join('')}</details>`:'';
- if(done)return `<section class="section ashen-zone-239"><div class="tag">MARTWY LAS · HISTORIA ZAKOŃCZONA</div><h2>Ostatni sygnał</h2><div class="ashen-zone-steps">${progress}</div><div class="panel"><h3>${session.combat?.won?'Echo zamiast odpowiedzi':'Powrót przez boczny korytarz'}</h3><p>${session.history[4]?.text||''}</p><p>Gdy zbliżasz się do granicy lasu, radio odzywa się po raz ostatni: „Wracaj”. Rezonator na chwilę milknie.</p><strong>To demonstracja narracji. Nie naliczono żadnych nagród i nie uruchomiono odliczania.</strong></div>${combat}<h3>Podjęte decyzje</h3>${records}<button data-zone-reset="1">Powtórz historię testową</button></section>`;
- return `<section class="section ashen-zone-239"><div class="tag">STREFA ANOMALII · MARTWY LAS · TEST</div><h2>Ostatni sygnał</h2><div class="ashen-zone-steps">${progress}</div><div class="small muted">Scena ${n+1}/5 · Wybory są zapisywane, wynik losowany tylko raz.</div><div class="panel ashen-zone-narrative"><h3>${esc(scene.name)}</h3>${scene.text.map(x=>`<p>${esc(x)}</p>`).join('')}${session.history.length?`<p class="small muted">Wcześniejszy ślad: ${esc(session.history[session.history.length-1].text)}</p>`:''}</div>${session.status==='combat_pending'?`<div class="panel"><h3>⚔ Obowiązkowe starcie</h3><p>Twoja ostatnia decyzja prowadzi do walki w istniejącym silniku PvE. Wynik będzie zapisany i nie zmieni się po odświeżeniu.</p><button class="primary" data-zone-fight="1">Rozpocznij walkę</button></div>`: `<div class="panel"><h3>Co robisz?</h3><div class="ashen-zone-choices">${scene.choices.map((c,i)=>`<button data-zone-choice="${i}"><strong>${String.fromCharCode(65+i)}.</strong> ${esc(c[0])}</button>`).join('')}</div></div>`}${combat}${session.history.length?`<details><summary>Historia wcześniejszych wyborów (${session.history.length})</summary>${records}</details>`:''}<p class="small muted">Tryb demonstracyjny: bez dropu, cooldownu i blokady wyposażenia. W docelowej Strefie wszystkie te mechaniki muszą być egzekwowane na serwerze.</p></section>`;
+ if(done){const epilogue=ending(session);return `<section class="section ashen-zone-239"><div class="tag">MARTWY LAS · HISTORIA ZAKOŃCZONA</div><h2>Ostatni sygnał</h2><div class="ashen-zone-steps">${progress}</div><div class="panel"><h3>${esc(epilogue.title)}</h3><p>${esc(epilogue.text)}</p><p>${esc(session.history[4]?.text||'')}</p><p>Gdy zbliżasz się do granicy lasu, radio odzywa się po raz ostatni: „Wracaj”. Rezonator na chwilę milknie.</p><strong>To demonstracja narracji. Nie naliczono żadnych nagród i nie uruchomiono odliczania.</strong></div>${trail}${combat}<h3>Podjęte decyzje</h3>${records}<button data-zone-reset="1">Powtórz historię testową</button></section>`;}
+ return `<section class="section ashen-zone-239"><div class="tag">STREFA ANOMALII · MARTWY LAS · TEST</div><h2>Ostatni sygnał</h2><div class="ashen-zone-steps">${progress}</div><div class="small muted">Scena ${n+1}/5 · Wybory są zapisywane, wynik losowany tylko raz.</div><div class="panel ashen-zone-narrative"><h3>${esc(scene.name)}</h3>${scene.text.map(x=>`<p>${esc(x)}</p>`).join('')}${session.history.length?`<p class="small muted">Wcześniejszy ślad: ${esc(session.history[session.history.length-1].text)}</p>`:''}</div>${session.status==='combat_pending'?`<div class="panel"><h3>⚔ Obowiązkowe starcie</h3><p>Twoja ostatnia decyzja prowadzi do walki w istniejącym silniku PvE. Wynik będzie zapisany i nie zmieni się po odświeżeniu.</p><p class="small muted">${esc(battle.advantage)} — przeciwnik: ${esc(battle.name)}</p><button class="primary" data-zone-fight="1">Rozpocznij walkę</button></div>`: `<div class="panel"><h3>Co robisz?</h3><div class="ashen-zone-choices">${scene.choices.map((c,i)=>`<button data-zone-choice="${i}"><strong>${String.fromCharCode(65+i)}.</strong> ${esc(c[0])}</button>`).join('')}</div></div>`}${trail}${combat}${session.history.length?`<details><summary>Historia wcześniejszych wyborów (${session.history.length})</summary>${records}</details>`:''}<p class="small muted">Tryb demonstracyjny: bez dropu, cooldownu i blokady wyposażenia. W docelowej Strefie wszystkie te mechaniki muszą być egzekwowane na serwerze.</p></section>`;
 }
-root.AshenZone239=Object.freeze({initial,pick,setCombat,html,scenes});
+root.AshenZone239=Object.freeze({initial,pick,setCombat,html,scenes,consequences,encounter,ending});
 })(window);
