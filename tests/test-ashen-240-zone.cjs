@@ -14,10 +14,10 @@ z.setCombat(trained,{won:true,enemy:z.encounter(trained).name,advantage:z.encoun
 z.pick(trained,1,attrs,()=>.01);assert.equal(trained.status,'finished');assert.equal(z.ending(trained).title,'Archiwum utraconych głosów');
 assert(z.html(trained).includes('Archiwum utraconych głosów'));
 z.setCombat(reckless,{won:false,enemy:z.encounter(reckless).name,lines:['Porażka']});
-z.pick(reckless,0,attrs,()=>.99);assert.equal(z.ending(reckless).title,'Powrót przez boczny korytarz');
+z.pick(reckless,0,attrs,()=>.99);assert.equal(z.ending(reckless).title,'Dotyk niemożliwego');
 assert.throws(()=>z.pick(reckless,0,attrs));assert.throws(()=>z.setCombat(reckless,{won:true}));
 const game=fs.readFileSync(path.join(base,'js/game.js'),'utf8');const html=fs.readFileSync(path.join(base,'index.html'),'utf8');
 assert(game.includes('window.AshenZone239.encounter(session)'));
 assert(game.includes('const report=fight(enemy,{combat060:true,recordRounds:true});'));
-assert(html.includes('Build 240'));assert(html.includes('ashen-zone-239.js?v=240'));
+assert(html.includes('Build 241'));assert(html.includes('ashen-zone-239.js?v=241'));
 console.log('PASS 240: rozne efekty decyzji, warianty trudnosci walki, epilogi, trwały zapis, brak ponownego losowania');
