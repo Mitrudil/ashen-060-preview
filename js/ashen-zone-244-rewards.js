@@ -19,7 +19,7 @@ function roll(session,options={},random=Math.random){
  const found=names.length>0&&random()<chance;
  const artifactName=found?names[Math.floor(random()*names.length)]:null;
  const scrap=Math.max(0,Math.round((won?12:5)+clues*2-hazards+Math.floor(random()*7)));
- const reward={id:'zone244:'+String(session.startedAt)+':'+String(session.runId||''),scrap,artifactName,chance,won,source:'Martwy Las · '+(session.story==='dom-pod-korzeniami'?'Dom pod korzeniami':'Ostatni sygnał')};
+ const reward={id:'zone244:'+String(session.startedAt)+':'+String(session.runId||''),scrap,artifactName,chance,won,source:(root.AshenZone239?.regionOfStory(session.story)||'Martwy Las')+' · '+(root.AshenZone239?.storyData(session)?.title||'Ostatni sygnał')};
  session.reward=reward; // nagroda zapisana razem z rozstrzygnieciem
  return reward;
 }

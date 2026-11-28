@@ -4242,6 +4242,13 @@ if(page==='zone'&&zone245CanRewardTest()){
   testDetails.insertAdjacentElement('afterend',p);p.insertAdjacentElement('afterend',b);
  }
 }
+if(page==='zone'&&zone252CanTest()){
+ const panel=document.querySelector('.ashen-zone-239 .ashen-zone-resonator');
+ if(panel){const sel=document.createElement('select');sel.id='zone-252-test-story';sel.setAttribute('aria-label','Wybierz historię do testu Build 252');
+ window.AshenZone239.fullStories.forEach(t=>{const option=document.createElement('option');option.value=t.id;option.textContent=t.region+' · '+t.title;sel.appendChild(option)});
+ const b=document.createElement('button');b.type='button';b.setAttribute('data-zone-test-252','1');b.textContent='Testuj wybraną historię 252 (jednorazowo, z nagrodami)';
+ const info=document.createElement('p');info.className='small muted';info.textContent='Jednorazowy test Build 252 podczas regeneracji; pełne nagrody i prawdziwe zakończenie.';panel.appendChild(info);panel.appendChild(sel);panel.appendChild(b);}
+}
 if(page==='zone'&&zone251CanTest()){
  const panel=document.querySelector('.ashen-zone-239 .ashen-zone-resonator');
  if(panel){const b=document.createElement('button');b.type='button';b.setAttribute('data-zone-test-251','1');b.textContent='Testuj: Dom pod korzeniami (jednorazowo, z nagrodami)';
@@ -4302,6 +4309,19 @@ function zone246StartRewardTest(){
  catch(err){localStorage.removeItem(key);throw err;}
 }
 // Build 251: jednorazowe wejście do nowej opowieści z realnym losowaniem, również przy cooldownie.
+function zone252TestKey(){return zone239StorageKey()+':bulk-story-unlock-252'}
+function zone252CanTest(){
+ const run=zone239Read();return !!run&&run.status==='finished'&&!window.AshenZone239.resonator(run).ready&&!localStorage.getItem(zone252TestKey());
+}
+function zone252StartTest(story){
+ if(!zone252CanTest())throw Error('Jednorazowy test Build 252 jest już wykorzystany lub niedostępny.');
+ if(!window.AshenZone239.fullStories.some(s=>s.id===story))throw Error('Nieznana historia Strefy.');
+ if(state.mission)throw Error('Nie można wejść do Strefy podczas wyprawy.');
+ const previous=zone239Read();if(previous?.reward&&!previous.rewardClaimed)zone244Claim(previous);
+ localStorage.setItem(zone252TestKey(),'used');
+ try{zone239Write(window.AshenZone239.initial({story,luck:explorationStats().luck}));}
+ catch(err){localStorage.removeItem(zone252TestKey());throw err;}
+}
 function zone251UnlockKey(){return zone239StorageKey()+':new-story-unlock-251'}
 function zone251CanTest(){
  const run=zone239Read();return !!run&&run.status==='finished'&&!window.AshenZone239.resonator(run).ready&&!localStorage.getItem(zone251UnlockKey());
@@ -4345,7 +4365,8 @@ function zone244Claim(session){
    const stageScrap=reward.stageScrap,xp=reward.xp;
    if(!Number.isSafeInteger(stageScrap)||stageScrap<0||stageScrap>100||!Number.isSafeInteger(xp)||xp<0||xp>500)throw Error('Nieprawidłowy rozmiar nagrody Strefy.');
    state.scrap+=stageScrap;state.xp=Math.max(0,Number(state.xp)||0)+xp;
-   const storyId='martwy-las:'+(session.story==='dom-pod-korzeniami'?'dom-pod-korzeniami':'ostatni-sygnal');
+   const regionKey=({'Martwy Las':'martwy-las','Złamany Wiadukt':'zlamany-wiadukt','Serce Anomalii':'serce-anomalii'})[window.AshenZone239.regionOfStory(session.story)]||'martwy-las';
+   const storyId=regionKey+':'+session.story;
    const first=Array.isArray(state.zoneStoryFirstCompletionIds)?state.zoneStoryFirstCompletionIds:[];
    if(!first.includes(storyId)){
     state.zoneStoryFirstCompletionIds=[...first,storyId];
@@ -4390,6 +4411,7 @@ function updateZoneResonator(){
 function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-zone-start')){try{const current=zone239Read();if(!current||window.AshenZone239.resonator(current).ready)zone239Write(window.AshenZone239.initial({story:b.dataset.zoneStart,luck:explorationStats().luck}));else throw Error('Rezonator nadal się regeneruje lub przygoda trwa.');render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-reward-test')){try{zone245StartRewardTest();render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-reward-test-246')){try{zone246StartRewardTest();render()}catch(err){message=err.message;render()}return}
+if(b.hasAttribute('data-zone-test-252')){try{zone252StartTest(document.getElementById('zone-252-test-story')?.value);render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-test-251')){try{zone251StartTest();render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie można testować Strefy podczas wyprawy.');const session=zone239Read();window.AshenZone239.pick(session,Number(b.dataset.zoneChoice),attrs());if(session.status==='finished'&&session.rewardSystemVersion===244&&!session.testMode){const catalog=window.Ashen060Catalog?.artifact_effects||[];const names=[...new Set(catalog.map(x=>x.artifact).filter(Boolean))];window.AshenZone244Rewards.roll(session,{names});window.AshenZone244Rewards.enrich(session);}zone239Write(session);if(session.reward)zone244Claim(session);render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-fight')){try{
@@ -4403,7 +4425,7 @@ if(b.hasAttribute('data-zone-fight')){try{
  const report=fight(enemy,{combat060:true,recordRounds:true});
  window.AshenZone239.setCombat(session,{...report,enemy:enemy.name,advantage:event.advantage});zone239Write(session);render();
  }catch(err){message=err.message;render()}return}
-if(b.hasAttribute('data-zone-reset')){try{const current=zone239Read();if(current?.reward&&!current.rewardClaimed)zone244Claim(current);zone239Write(window.AshenZone239.initial({testMode:true,story:current?.story,luck:explorationStats().luck}));render()}catch(err){message=err.message;render()}return}
+if(b.hasAttribute('data-zone-reset')){try{const current=zone239Read();if(current?.reward&&!current.rewardClaimed)zone244Claim(current);zone239Write(window.AshenZone239.initial({testMode:true,cooldownUntil:current?.testMode&&Number.isFinite(current.testCooldownUntil)?current.testCooldownUntil:current?.finishedAt?current.finishedAt+window.AshenZone239.RESONATOR_COOLDOWN_MS:null,story:document.getElementById('ashen-zone-test-story')?.value||current?.story,luck:explorationStats().luck}));render()}catch(err){message=err.message;render()}return}
 if(b.dataset.mailFolder){mailFolder=b.dataset.mailFolder;mailOpenedId=null;mailComposeTo=null;render();return}if(b.dataset.mailCompose){mailComposeTo='';mailOpenedId=null;render();return}if(b.dataset.mailCancel){mailComposeTo=null;render();return}if(b.dataset.mailOpen){mailOpen(b.dataset.mailOpen);return}if(b.dataset.mailBack){mailOpenedId=null;render();return}if(b.dataset.mailReply){mailComposeTo=b.dataset.mailReply;mailOpenedId=null;render();return}if(b.dataset.mailSend){try{mailSend($('mail-target')?.value,$('mail-body')?.value)}catch(err){message=err.message;render()}return}if(b.dataset.mailReport){setPage('pvp');message='Historyczne raporty offline nie są już obsługiwane. Nowe raporty znajdziesz w PvP online.';render();return}if(b.dataset.devPanel){devPanelOpen=!devPanelOpen;if(!devPanelOpen)devPendingResetId=null;render();return}if(b.dataset.devCreate){try{devCreateProfile()}catch(err){message=err.message;render()}return}if(b.dataset.devSwitch){try{devSwitch(b.dataset.devSwitch)}catch(err){message=err.message;render()}return}if(b.dataset.devDelete){try{devDeleteProfile(b.dataset.devDelete)}catch(err){message=err.message;render()}return}if(b.dataset.devResetCancel){devPendingResetId=null;render();return}if(b.dataset.devResetConfirm){try{devResetTestProfile(b.dataset.devResetConfirm)}catch(err){message=err.message;render()}return}if(b.dataset.devReset){try{devAskResetTestProfile(b.dataset.devReset)}catch(err){message=err.message;render()}return}if(b.hasAttribute('data-artifact-test-pack')){try{grantArtifactTestPack()}catch(err){message=err.message}render();return}if(b.hasAttribute('data-socket-install')||b.hasAttribute('data-socket-remove')){
  try{
   const installing=b.hasAttribute('data-socket-install');

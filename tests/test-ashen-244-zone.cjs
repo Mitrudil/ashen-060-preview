@@ -39,9 +39,9 @@ context.zone244Claim(restored);assert.equal(context.state.scrap,after);assert.eq
 assert.equal(sessionWrites,2);assert.equal(JSON.parse(memory.get('test-char')).artifactStock.length,1);
 // Deployment / regression invariants
 assert(game.includes('zone244Reconcile()'));
-assert(game.includes('initial({testMode:true,story:current?.story,luck:explorationStats().luck})'));
+assert(game.includes("initial({testMode:true,cooldownUntil:"));assert(game.includes("story:document.getElementById('ashen-zone-test-story')?.value||current?.story"));
 assert(game.includes('initial({luck:explorationStats().luck})'));
 assert(game.includes('zone239Write(session);if(session.reward)zone244Claim(session)'));
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-assert(html.includes('Build 251')&&html.indexOf('ashen-zone-244-rewards.js')<html.indexOf('game.js?v=251'));
+assert(html.includes('Build 252')&&html.indexOf('ashen-zone-244-rewards.js')<html.indexOf('game.js?v=252'));
 console.log('PASS 244: 3 finales, random chance & duplicates, one-time reward, inventory stock, restore and test-mode no rewards');

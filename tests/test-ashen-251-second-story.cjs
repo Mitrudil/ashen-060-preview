@@ -19,8 +19,8 @@ const reward=r.roll(s,{names:['Echo Burzy']},()=>.999);r.enrich(s);assert(reward
 const before=JSON.stringify(s.reward);assert.equal(JSON.stringify(r.enrich(s)),before);
 assert(z.html(s).includes('Dom pod korzeniami'));
 const game=fs.readFileSync(base+'/js/game.js','utf8');
-assert(game.includes("const storyId='martwy-las:'+(session.story==='dom-pod-korzeniami'"));
+assert(game.includes("const storyId=regionKey+':'+session.story"));
 assert(game.includes('function zone251CanTest()'));assert(game.includes('data-zone-test-251'));assert(game.includes('zone251StartTest()'));
 assert(game.includes('story:b.dataset.zoneStart'));
-const h=fs.readFileSync(base+'/index.html','utf8');assert(h.includes('Build 251'));
+const h=fs.readFileSync(base+'/index.html','utf8');assert(h.includes('Build 252'));
 console.log('PASS 251: two selectable stories; 5 scenes/15 decisions; mandatory fight; distinct endings and reward source; idempotent enrichment; separate first-completion key; cooldown test');

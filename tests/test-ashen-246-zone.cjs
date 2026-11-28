@@ -21,7 +21,7 @@ const game=fs.readFileSync(root+'/js/game.js','utf8');
 const a=game.indexOf('function zone244Claim(session){'),b=game.indexOf('function zone244Reconcile(){',a);
 const memory=new Map(),storage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)};
 const fake={scrap:10,xp:0,materials:{czesci:0,elektronika:0,medical:0},artifactStock:[]};let ups=0;
-const context={state:fake,KEY:'save',localStorage:storage,devActiveId:()=> 'alt',devProfileSaveKey:()=> 'none',artifactCatalogName:n=>n,window:{ASHEN_ONLINE:{localChanged(){}}},zone239Write:x=>storage.setItem('zone',JSON.stringify(x)),levelUp:()=>{ups++},Error,JSON,Number,Math,Array,String};
+const context={state:fake,KEY:'save',localStorage:storage,devActiveId:()=> 'alt',devProfileSaveKey:()=> 'none',artifactCatalogName:n=>n,window:{ASHEN_ONLINE:{localChanged(){}},AshenZone239:{regionOfStory:()=> 'Martwy Las'}},zone239Write:x=>storage.setItem('zone',JSON.stringify(x)),levelUp:()=>{ups++},Error,JSON,Number,Math,Array,String};
 vm.runInNewContext(game.slice(a,b),context);
 context.zone244Claim(s);
 assert.equal(context.state.zoneRewardClaimIds.length,1);
@@ -31,7 +31,7 @@ const before=JSON.stringify(context.state);context.zone244Claim(s);assert.equal(
 const s2=completed();r.roll(s2,{names:[]},()=>.999);r.enrich(s2);context.zone244Claim(s2);
 assert.equal(s2.reward.firstCompletion,false);assert.equal(context.state.xp,165+85);
 assert.equal(ups,2);
-const html=fs.readFileSync(root+'/index.html','utf8');assert(html.includes('Build 251'));
+const html=fs.readFileSync(root+'/index.html','utf8');assert(html.includes('Build 252'));
 assert(game.includes('window.AshenZone244Rewards.enrich(session)'));
 assert(game.includes('data-zone-reward-test-246'));assert(game.includes('zone246StartRewardTest()'));assert(game.includes("reward-test-unlock-246"));
 console.log('PASS 246: existing resources, scene rewards, combat XP, first-time bonus, idempotent claims, no test rewards');
