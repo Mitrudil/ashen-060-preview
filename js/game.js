@@ -300,7 +300,53 @@ if(state.inventory.some(x=>typeof x==='string')){
  }state.equip=eq;
 }
 const instance=uid=>state.inventory.find(x=>x.uid===uid),def=inst=>items.find(x=>x.id===inst?.id),rarity=inst=>window.Ashen060QualityBridge.resolve(inst,window.Ashen060Quality);
+// Build 237: osobny magazyn. Pełne dane starych artefaktów trzymamy w legacyItem.
+// Dla niezgodnych nazw NIE wymyślamy nowych efektów.
+function artifactCatalogName(name){
+ const norm=x=>String(x||'').trim().toLocaleLowerCase('pl-PL');
+ const found=window.Ashen060Catalog?.artifact_effects?.find(x=>norm(x.artifact)===norm(name));
+ return found?.artifact||null;
+}
+function reconcileArtifactStock(){
+ let changed=false;
+ if(!Array.isArray(state.artifactStock)){state.artifactStock=[];changed=true;}
+ const stock=state.artifactStock;
+ const seen=new Set(stock.map(x=>x.uid));
+ // Stare artefakty są zachowane jako całe egzemplarze, z prefiksami, sufiksami i jakością.
+ for(const legacy of state.inventory.filter(x=>def(x)?.artifact)){
+  const d=def(legacy),uid='legacy-artifact:'+legacy.uid;
+  if(!seen.has(uid)){stock.push({uid,name:d.name,legacyItem:structuredClone(legacy),socketItemUid:null});seen.add(uid);changed=true;}
+ }
+ const originalSize=state.inventory.length;
+ state.inventory=state.inventory.filter(x=>!def(x)?.artifact);
+ if(state.inventory.length!==originalSize)changed=true;
+ for(const slot of ['extra','extra2','extra3']){
+  const uid=state.equip?.[slot];
+  if(uid&&!state.inventory.some(x=>x.uid===uid)){state.equip[slot]=null;changed=true;}
+ }
+ // Rekonstrukcja artefaktów osadzonych testowo w Build 236 bez ich utraty.
+ for(const item of state.inventory){
+  if(!Array.isArray(item.socketedArtifacts)||!item.socketedArtifacts.length)continue;
+  if(!Array.isArray(item.socketArtifactUids))item.socketArtifactUids=[];
+  for(let i=0;i<item.socketedArtifacts.length;i++){
+   let uid=item.socketArtifactUids[i];
+   if(!uid||!stock.some(x=>x.uid===uid)){
+    uid=`socket237:${item.uid}:${i}`;
+    if(seen.has(uid))uid=`socket237:${item.uid}:${i}:${stock.length}`;
+    stock.push({uid,name:item.socketedArtifacts[i],socketItemUid:item.uid,migratedFrom236:true});
+    seen.add(uid);item.socketArtifactUids[i]=uid;changed=true;
+   }else{
+    const token=stock.find(x=>x.uid===uid);
+    if(token.socketItemUid!==item.uid){token.socketItemUid=item.uid;changed=true;}
+   }
+  }
+  if(item.socketArtifactUids.length!==item.socketedArtifacts.length){item.socketArtifactUids.length=item.socketedArtifacts.length;changed=true;}
+ }
+ return changed;
+}
 normalizeEquip();
+const artifactPreMigrationSnapshot=JSON.stringify(state);
+const artifactMigrationPending=reconcileArtifactStock();
 if(!Number.isFinite(state.credits)||state.credits<0)state.credits=0;
 if(!Number.isFinite(state.cores)||state.cores<0)state.cores=0;
 if(!Number.isFinite(state.schematics)||state.schematics<0)state.schematics=0;
@@ -758,8 +804,7 @@ function pickLoot(loc,exploration=null,forcedCount=null){
   const roll=Math.random(),count=roll<odds[1]?3:roll<odds[0]?2:1;
  const all=COMMON_EXPEDITION_DROPS.slice();
  // Artefakty są rzadkimi znaleziskami, niezależnymi od zwykłej puli akcesoriów.
- if(loc.id==='hospital')for(const id of ['ash_needle','ash_eye','ash_dust'])all.push({id,w:0.018});
- if(loc.id==='outpost')for(const id of artifactItems.map(x=>x.id))all.push({id,w:0.034});
+ // Artefakty nie zajmują slotów akcesoriów; osobny magazyn (Build 237).
  const pool=all.filter(x=>item(x.id));
  const picks=[];
  const actualCount=Math.min(3,(forcedCount===null?count:forcedCount)+(exploration?.success?1:0));
@@ -775,7 +820,7 @@ const PAGE_IDS=new Set(['character','companion','transport','missions','arena','
 let page='character',message='',invFilter='all',invGroup='all',selectedUid=null,workshopUid=null;
 try{const previousPage=localStorage.getItem(PAGE_KEY);if(PAGE_IDS.has(previousPage))page=previousPage}catch{}
 function setPage(next){page=PAGE_IDS.has(next)?next:'character';window.ASHEN_ONLINE?.onPageChanged?.(page);try{localStorage.setItem(PAGE_KEY,page)}catch{}}let bulkSelected=new Set();const $=id=>document.getElementById(id),item=id=>items.find(x=>x.id===id),rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,clamp=(v,a,b)=>Math.min(b,Math.max(a,v));const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function save(){try{const data=JSON.stringify(state);localStorage.setItem(KEY,data);if(devActiveId()==='main')localStorage.setItem(devProfileSaveKey('main'),data);if(!state.labSetBackup)window.ASHEN_ONLINE?.localChanged()}catch{message='Nie można zapisać postępu w tej przeglądarce.'}}if(equipmentCleaned){
+function save(){try{const data=JSON.stringify(state);localStorage.setItem(KEY,data);if(devActiveId()==='main')localStorage.setItem(devProfileSaveKey('main'),data);if(!state.labSetBackup)window.ASHEN_ONLINE?.localChanged()}catch{message='Nie można zapisać postępu w tej przeglądarce.'}}if(artifactMigrationPending){try{const backupKey=KEY+'-backup-before-237-artifacts';if(!localStorage.getItem(backupKey))localStorage.setItem(backupKey,artifactPreMigrationSnapshot)}catch{}save();}if(equipmentCleaned){
  for(const oldKey of ['ashen-set-compare-v0474','ashen-all-sets-v0475'])try{localStorage.removeItem(oldKey)}catch{}
  save();
 }
@@ -2870,7 +2915,7 @@ function damageReportPanel(r){
 // Nie zapisujemy tymczasowego wyposażenia: po wyliczeniu przywracamy oryginalną referencję.
 let itemCompareSlot=null;
 function itemEquipSlots(inst){
- const d=def(inst);if(!d||d.slot==='material')return [];
+ const d=def(inst);if(!d||d.slot==='material'||d.artifact)return [];
  if(d.slot==='hand1')return ['right','left'];
  if(d.slot==='hand2')return ['right'];
  if(d.slot==='extra')return ['extra','extra2','extra3'];
@@ -3010,16 +3055,48 @@ function changeSocketArtifact(uid,value,mode){
  if(state.mission)throw Error('Podczas wyprawy nie można zmieniać artefaktów.');
  const inst=instance(uid),d=def(inst);
  if(!inst||!d||d.artifact||d.slot==='material')throw Error('Nie znaleziono przedmiotu do osadzenia artefaktu.');
- const currentSlot=Object.keys(state.equip).find(k=>state.equip[k]===uid);
- const slot=currentSlot||itemEquipDefaultSlot(inst);
- const updated=window.Ashen236SocketLab.modify(inst,value,mode,slot,window.Ashen060Catalog,window.Ashen060Bonuses,window.Ashen060EquipmentPreview);
- const old=inst.socketedArtifacts;
- try{
+ const stock=state.artifactStock||[];
+ const slot=Object.keys(state.equip).find(k=>state.equip[k]===uid)||itemEquipDefaultSlot(inst);
+ const previousSockets=[...(inst.socketedArtifacts||[])],previousUids=[...(inst.socketArtifactUids||[])];
+ let token=null,prevOwner=null,updated;
+ if(mode==='install'){
+  token=stock.find(x=>x.uid===value);
+  if(!token||token.socketItemUid)throw Error('Ten egzemplarz artefaktu nie jest dostępny w magazynie.');
+  const canonical=artifactCatalogName(token.name);
+  if(!canonical)throw Error('Archiwalny artefakt nie ma jeszcze odpowiednika w katalogu gniazd. Zachowano go w magazynie.');
+  updated=window.Ashen236SocketLab.modify(inst,canonical,'install',slot,window.Ashen060Catalog,window.Ashen060Bonuses,window.Ashen060EquipmentPreview);
+  prevOwner=token.socketItemUid;
   inst.socketedArtifacts=updated.socketedArtifacts;
-  // Przeliczenie statystyk przed zapisaniem. W przypadku błędu wracamy do starej obsady.
-  attrs();heroDefense();
-  save();message=mode==='install'?'Osadzono artefakt (tryb testowy, bez kosztów).':'Wyjęto artefakt (tryb testowy, bez kosztów).';
- }catch(err){inst.socketedArtifacts=old;throw err;}
+  inst.socketArtifactUids=[...previousUids,token.uid];
+  token.socketItemUid=uid;
+ }else if(mode==='remove'){
+  const idx=Number(value);
+  if(!Number.isInteger(idx)||idx<0||idx>=previousSockets.length)throw Error('Nie znaleziono artefaktu.');
+  token=stock.find(x=>x.uid===previousUids[idx]);
+  if(!token||token.socketItemUid!==uid)throw Error('Brak zgodnego egzemplarza w magazynie — przerwano bez zmiany.');
+  updated=window.Ashen236SocketLab.modify(inst,idx,'remove',slot,window.Ashen060Catalog,window.Ashen060Bonuses,window.Ashen060EquipmentPreview);
+  prevOwner=token.socketItemUid;
+  inst.socketedArtifacts=updated.socketedArtifacts;
+  inst.socketArtifactUids=previousUids.filter((_,i)=>i!==idx);
+  token.socketItemUid=null;
+ }else throw Error('Nieznana operacja.');
+ try{
+  attrs();heroDefense();save();
+  message=mode==='install'?'Osadzono posiadany artefakt.':'Wyjęty artefakt wrócił do magazynu.';
+ }catch(err){inst.socketedArtifacts=previousSockets;inst.socketArtifactUids=previousUids;if(token)token.socketItemUid=prevOwner;throw err;}
+}
+function artifactStockPanel(){
+ const stock=state.artifactStock||[],free=stock.filter(x=>!x.socketItemUid),used=stock.length-free.length;
+ const entries=stock.map(x=>`<div class="ashen-socket-lab-row"><span>✧ ${escape(x.name)}${x.legacyItem?' · archiwalny egzemplarz':''}</span><span class="small muted">${x.socketItemUid?'Osadzony':artifactCatalogName(x.name)?'Gotowy do osadzenia':'Zachowany · oczekuje na zgodny efekt'}</span></div>`).join('');
+ return `<section class="panel section" aria-label="Magazyn artefaktów"><h3>✧ Magazyn artefaktów</h3><p class="small muted">Posiadane: ${stock.length} · wolne: ${free.length} · osadzone: ${used}. Stare egzemplarze zachowują pełne dane, ale bez zgodnego efektu nie można ich automatycznie osadzić. Rezonans starych akcesoriów wymaga osobnego przeniesienia do gniazd.</p>${entries||'<p class="muted small">Magazyn jest pusty. W Build 237 dostępny jest próbny przydział do testowania.</p>'}<div class="actions"><button data-artifact-test-pack ${state.artifactTestPack237?'disabled':''}>Przydziel 3 artefakty testowe (jednorazowo)</button></div></section>`;
+}
+function grantArtifactTestPack(){
+ if(state.artifactTestPack237)throw Error('Próbny przydział został już wykorzystany.');
+ if(state.mission)throw Error('Nie można odbierać artefaktów podczas wyprawy.');
+ const names=['Płytka Bastionu','Oko Martwej Strefy','Żar Bez Płomienia'];
+ const stock=state.artifactStock||(state.artifactStock=[]);
+ names.forEach((name,i)=>stock.push({uid:`artifact237:${Date.now()}:${i}`,name,socketItemUid:null,test:true}));
+ state.artifactTestPack237=true;save();message='Dodano trzy artefakty testowe do magazynu.';
 }
 
 function item060PreviewPanel(inst,targetSlot){
@@ -3034,7 +3111,7 @@ function item060PreviewPanel(inst,targetSlot){
  const ownedCapacity=Number.isInteger(inst.socketCapacity)?inst.socketCapacity:null;
  const status=ownedCapacity===null?'Ten przedmiot pochodzi ze starego systemu. Liczba gniazd nie została wylosowana; nie nadajemy jej automatycznie.':ownedCapacity===0?'Brak gniazd artefaktów':`Gniazda artefaktów: ${ownedCapacity}/3 · osadzone artefakty: ${(inst.socketedArtifacts||[]).length}.`;
  if(ownedCapacity===0)return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — gniazda artefaktów</summary><p class="small muted">Brak gniazd artefaktów</p><p class="small muted">Ten przedmiot nie ma gniazd. Nie można w nim osadzać artefaktów. Podgląd dostępnych efektów dotyczy tylko przedmiotów z gniazdami.</p></details>`;
- return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — podgląd artefaktów w tym przedmiocie</summary><p class="small muted">${escape(status)}</p><p class="small muted">Wybierz artefakt, aby sprawdzić planowany efekt w kategorii <strong>${escape(engine.SLOT_CATEGORY[adapter.categoryOfGameSlot(slot)]||'wyposażenia')}</strong>. To tylko odczyt z nowego modułu — nie osadza artefaktu, nie zmienia statystyk ani zapisu.</p><div class="actions" style="flex-wrap:wrap">${choices.map(x=>`<button type="button" data-ashen060-artifact="${escape(x.name)}" class="${x.name===selected.name?'primary':''}">${escape(x.name)}</button>`).join('')}</div><p style="margin:12px 0 4px"><strong>${escape(selected.name)} · ${escape(selected.family)}</strong></p><p class="small">Efekt: <strong>${desc(selected)}</strong>${selected.condition?` · ${escape(selected.condition)}`:''}</p>${ownedCapacity>0?`<section class="ashen-socket-lab"><strong>Osadzanie testowe · Build 236</strong><p class="small muted">Możesz osadzić lub wyjąć efekt z katalogu. Zmiana zapisuje się przy tym egzemplarzu. Na razie bez zużywania artefaktów, kosztów i działania w PvP.</p><div class="actions"><button type="button" data-socket-install="${escape(inst.uid)}" data-socket-name="${escape(selected.name)}" ${state.mission||((inst.socketedArtifacts||[]).length>=ownedCapacity)?'disabled':''}>Osadź: ${escape(selected.name)}</button></div>${(inst.socketedArtifacts||[]).map((name,i)=>`<div class="ashen-socket-lab-row"><span>${escape(name)}</span><button type="button" data-socket-remove="${escape(inst.uid)}" data-socket-index="${i}" ${state.mission?'disabled':''}>Wyjmij</button></div>`).join('')}</section>`:''}<p class="small muted">Właściwe zdobywanie artefaktów jako materiałów i ich koszty pozostają do opracowania. PvP bez zmian.</p></details>`;
+ return `<details class="ashen-060-in-item" style="margin-top:14px;padding:12px;border:1px solid var(--border,#566);border-radius:10px"><summary style="cursor:pointer;font-weight:700">◈ ASHEN 0.6 — podgląd artefaktów w tym przedmiocie</summary><p class="small muted">${escape(status)}</p><p class="small muted">Wybierz artefakt, aby sprawdzić planowany efekt w kategorii <strong>${escape(engine.SLOT_CATEGORY[adapter.categoryOfGameSlot(slot)]||'wyposażenia')}</strong>. To tylko odczyt z nowego modułu — nie osadza artefaktu, nie zmienia statystyk ani zapisu.</p><div class="actions" style="flex-wrap:wrap">${choices.map(x=>`<button type="button" data-ashen060-artifact="${escape(x.name)}" class="${x.name===selected.name?'primary':''}">${escape(x.name)}</button>`).join('')}</div><p style="margin:12px 0 4px"><strong>${escape(selected.name)} · ${escape(selected.family)}</strong></p><p class="small">Efekt: <strong>${desc(selected)}</strong>${selected.condition?` · ${escape(selected.condition)}`:''}</p>${ownedCapacity>0?`<section class="ashen-socket-lab"><strong>Osadzanie z magazynu · Build 237</strong><p class="small muted">Możesz osadzać tylko posiadane i wolne egzemplarze zgodne z kategorią gniazda. Wybór powyżej to wyłącznie podgląd efektu.</p><div class="actions">${(state.artifactStock||[]).filter(x=>!x.socketItemUid&&choices.some(c=>c.name===artifactCatalogName(x.name))).map(x=>`<button type="button" data-socket-install="${escape(inst.uid)}" data-socket-name="${escape(x.uid)}" ${state.mission||((inst.socketedArtifacts||[]).length>=ownedCapacity)?'disabled':''}>Osadź: ${escape(x.name)}</button>`).join('')||'<span class="small muted">Brak zgodnych artefaktów w magazynie.</span>'}</div>${(inst.socketedArtifacts||[]).map((name,i)=>`<div class="ashen-socket-lab-row"><span>${escape(name)}</span><button type="button" data-socket-remove="${escape(inst.uid)}" data-socket-index="${i}" ${state.mission?'disabled':''}>Wyjmij</button></div>`).join('')}</section>`:''}<p class="small muted">Zdobywanie artefaktów i rezonanse zostaną dopracowane w kolejnym etapie. PvP bez zmian.</p></details>`;
 }
 // Build 233: read-only icons for actual socket contents, never simulated artifact choices.
 function artifactSocketVisuals(inst,large=false){
@@ -3660,7 +3737,7 @@ function inventory(){
  <div class="bulk-summary">Wartość zaznaczonych: <strong>${bulkSum.credits.toLocaleString('pl-PL')} kredytów</strong><br>Materiały z rozłożenia: <strong>${selectedForBulk.length?salvageLabel(bulkSum.mats):'—'}</strong></div>
  <div class="actions"><button class="primary" data-action="bulk-sell" ${selectedForBulk.length?'':'disabled'}>Sprzedaj zaznaczone (${selectedForBulk.length})</button><button data-action="bulk-salvage" ${selectedForBulk.length?'':'disabled'}>Rozłóż zaznaczone (${selectedForBulk.length})</button></div>
  <div class="bulk-hint">Założone i zabezpieczone przedmioty nie mogą zostać zaznaczone. Potwierdzenie pokaże łączną nagrodę. Zaznaczenie nie jest zapisywane między uruchomieniami gry.</div></div>`;
- return section('Ekwipunek',`${equipmentPresetPanel()}${equipmentCatalogPanel()}${zLabPanel()}
+ return section('Ekwipunek',`${equipmentPresetPanel()}${equipmentCatalogPanel()}${artifactStockPanel()}${zLabPanel()}
  <div class="small muted" style="margin:8px 0 14px">Przedmioty z nowych Wypraw trafiają od razu do ekwipunku. Zakładasz je standardowym przyciskiem „Załóż”. ${Object.values(state.equip).some(uid=>instance(uid)?.qualitySchema==='ashen-v06')?'Serwerowe PvP wymaga jeszcze aktualizacji obsługi nowych statystyk; zapis postaci w chmurze pozostaje dostępny.':''}</div>
  <div class="inventory-premium-intro">
    <div class="inventory-premium-copyblock">
@@ -3672,7 +3749,7 @@ function inventory(){
       <div class="inventory-quick-pill"><span>Przedmioty</span><strong>${state.inventory.length}</strong></div>
       <div class="inventory-quick-pill"><span>Z gniazdami</span><strong>${state.inventory.filter(x=>Number.isInteger(x.socketCapacity)&&x.socketCapacity>0).length}</strong></div>
       <div class="inventory-quick-pill"><span>Założone sloty</span><strong>${Object.values(state.equip).filter(Boolean).length}</strong></div>
-      <div class="inventory-quick-pill"><span>Artefakty</span><strong>${['extra','extra2','extra3'].filter(s=>instance(state.equip[s])&&def(instance(state.equip[s]))?.artifact).length}/3</strong></div>
+      <div class="inventory-quick-pill"><span>Artefakty</span><strong>${(state.artifactStock||[]).length}</strong></div>
       <div class="inventory-quick-pill"><span>Dominująca ręka</span><strong>${state.dominantHand==='left'?'Lewa':'Prawa'}</strong></div>
    </div>
  </div>
@@ -3903,6 +3980,7 @@ if(typeof state.factionTestPackGranted!=='boolean')state.factionTestPackGranted=
   if(typeof inst.locked!=='boolean')inst.locked=Number(inst.rarity)>=3;
  }
  normalizeEquip();
+ reconcileArtifactStock();
  bulkSelected.clear();selectedUid=null;workshopUid=null;
  setPage(state.created?'home':'bunker');
  message=`${source}: „${state.name}”, poziom ${state.level}. Postać jest już aktywna.`;
@@ -4103,7 +4181,7 @@ if(preview060WasOpen&&preview060Restored)preview060Restored.open=true;
 const preview060RestoredDialog=document.querySelector('.ashen-item-modal');
 if(preview060RestoredDialog&&preview060Scroll)preview060RestoredDialog.scrollTop=preview060Scroll;
 let c=$('countdown');if(c)c.textContent=Math.max(0,Math.ceil((state.mission?.ends-Date.now())/1000))+' s'}
-function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.dataset.mailFolder){mailFolder=b.dataset.mailFolder;mailOpenedId=null;mailComposeTo=null;render();return}if(b.dataset.mailCompose){mailComposeTo='';mailOpenedId=null;render();return}if(b.dataset.mailCancel){mailComposeTo=null;render();return}if(b.dataset.mailOpen){mailOpen(b.dataset.mailOpen);return}if(b.dataset.mailBack){mailOpenedId=null;render();return}if(b.dataset.mailReply){mailComposeTo=b.dataset.mailReply;mailOpenedId=null;render();return}if(b.dataset.mailSend){try{mailSend($('mail-target')?.value,$('mail-body')?.value)}catch(err){message=err.message;render()}return}if(b.dataset.mailReport){setPage('pvp');message='Historyczne raporty offline nie są już obsługiwane. Nowe raporty znajdziesz w PvP online.';render();return}if(b.dataset.devPanel){devPanelOpen=!devPanelOpen;if(!devPanelOpen)devPendingResetId=null;render();return}if(b.dataset.devCreate){try{devCreateProfile()}catch(err){message=err.message;render()}return}if(b.dataset.devSwitch){try{devSwitch(b.dataset.devSwitch)}catch(err){message=err.message;render()}return}if(b.dataset.devDelete){try{devDeleteProfile(b.dataset.devDelete)}catch(err){message=err.message;render()}return}if(b.dataset.devResetCancel){devPendingResetId=null;render();return}if(b.dataset.devResetConfirm){try{devResetTestProfile(b.dataset.devResetConfirm)}catch(err){message=err.message;render()}return}if(b.dataset.devReset){try{devAskResetTestProfile(b.dataset.devReset)}catch(err){message=err.message;render()}return}if(b.hasAttribute('data-socket-install')||b.hasAttribute('data-socket-remove')){
+function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.dataset.mailFolder){mailFolder=b.dataset.mailFolder;mailOpenedId=null;mailComposeTo=null;render();return}if(b.dataset.mailCompose){mailComposeTo='';mailOpenedId=null;render();return}if(b.dataset.mailCancel){mailComposeTo=null;render();return}if(b.dataset.mailOpen){mailOpen(b.dataset.mailOpen);return}if(b.dataset.mailBack){mailOpenedId=null;render();return}if(b.dataset.mailReply){mailComposeTo=b.dataset.mailReply;mailOpenedId=null;render();return}if(b.dataset.mailSend){try{mailSend($('mail-target')?.value,$('mail-body')?.value)}catch(err){message=err.message;render()}return}if(b.dataset.mailReport){setPage('pvp');message='Historyczne raporty offline nie są już obsługiwane. Nowe raporty znajdziesz w PvP online.';render();return}if(b.dataset.devPanel){devPanelOpen=!devPanelOpen;if(!devPanelOpen)devPendingResetId=null;render();return}if(b.dataset.devCreate){try{devCreateProfile()}catch(err){message=err.message;render()}return}if(b.dataset.devSwitch){try{devSwitch(b.dataset.devSwitch)}catch(err){message=err.message;render()}return}if(b.dataset.devDelete){try{devDeleteProfile(b.dataset.devDelete)}catch(err){message=err.message;render()}return}if(b.dataset.devResetCancel){devPendingResetId=null;render();return}if(b.dataset.devResetConfirm){try{devResetTestProfile(b.dataset.devResetConfirm)}catch(err){message=err.message;render()}return}if(b.dataset.devReset){try{devAskResetTestProfile(b.dataset.devReset)}catch(err){message=err.message;render()}return}if(b.hasAttribute('data-artifact-test-pack')){try{grantArtifactTestPack()}catch(err){message=err.message}render();return}if(b.hasAttribute('data-socket-install')||b.hasAttribute('data-socket-remove')){
  try{
   const installing=b.hasAttribute('data-socket-install');
   changeSocketArtifact(installing?b.dataset.socketInstall:b.dataset.socketRemove,installing?b.dataset.socketName:b.dataset.socketIndex,installing?'install':'remove');
