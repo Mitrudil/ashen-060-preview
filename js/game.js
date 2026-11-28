@@ -3115,7 +3115,9 @@ function artifactFamilyProgressPanel(){
   const owned=names.filter(name=>present.has(name)).length,active=wornNames.get(family)?.size||0;
   const tier=active>=6?'3/6 i 6/6':active>=3?'3/6':'brak';
   const labels=names.map(name=>`<span class="${present.has(name)?'good':'muted'}">${present.has(name)?'◆':'◇'} ${escape(name)}</span>`).join(' · ');
-  return `<div class="ashen-socket-lab-row" style="display:block"><strong>${escape(family)}</strong> · kolekcja ${owned}/6 · osadzone w założonym ekwipunku: ${active}/6 · rezonans: ${tier}<p class="small muted">${labels}</p></div>`;
+  const plan=window.Ashen248FamilyDesign?.[family];
+  const overview=plan?`<p class="small"><strong>Specjalizacja (propozycja): ${escape(plan.specialization)}</strong> — ${escape(plan.description)}</p><p class="small muted">3/6: ${escape(plan.tier3)} · 6/6: ${escape(plan.tier6)}. Premie nieaktywne — przed wdrożeniem wymagają zatwierdzenia i balansu.</p>`:'';
+  return `<div class="ashen-socket-lab-row" style="display:block"><strong>${escape(family)}</strong> · kolekcja ${owned}/6 · osadzone w założonym ekwipunku: ${active}/6 · rezonans: ${tier}${overview}<p class="small muted">${labels}</p></div>`;
  }).join('');
  return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Premie rezonansu wymagają jeszcze zatwierdzenia balansu.</p>${html}</details>`;
 }
