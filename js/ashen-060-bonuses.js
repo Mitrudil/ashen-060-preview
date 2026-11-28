@@ -82,11 +82,16 @@ for(const [slot,item] of Object.entries(items)){
   const effect=catalog.artifact_effects.find(e=>e.artifact===name&&e.slot_category===cat);
   requireCondition(effect,'Brak efektu '+name+' dla '+cat);
   mods.push(mod('artifact',effect.key,effect.value,{source_item_id:item.id||null,slot_id:slot,activation_condition:effect.condition||'',order:40}));
-  counts[effect.family]=(counts[effect.family]||0)+1;
+  (counts[effect.family] ||= new Set()).add(name);
  }
 }
-// Rezonsans aktywuje się raz po trzech artefaktach jednej rodziny, niezależnie od 4. i dalszych.
-for(const [family,count] of Object.entries(counts))if(count>=3)signals.push({type:'resonance',family,count,active:true,bonuses_pending_balance:true});
+// Zatwierdzony kierunek: rezonanse za 3 i 6 ROZNYCH artefaktow jednej rodziny.
+// Sygnaly tylko do podgladu; dokladne premie bojowe pozostaja do balansu.
+for(const [family,names] of Object.entries(counts)){
+ const count=names.size;
+ if(count>=3)signals.push({type:'resonance',family,count,tier:3,active:true,bonuses_pending_balance:true});
+ if(count>=6)signals.push({type:'resonance',family,count,tier:6,active:true,bonuses_pending_balance:true});
+}
 if(snapshot.setPolicy==='auto-v20'){
  requireCondition(!snapshot.activeSets?.length,'Nie wolno mieszać automatycznych i ręcznych progów X/Y');
  const result=autoSetBonuses(items,catalog);mods.push(...result.modifiers);signals.push(...result.signals);setDetails=result.details;

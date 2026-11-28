@@ -31,7 +31,7 @@ const before=JSON.stringify(context.state);context.zone244Claim(s);assert.equal(
 const s2=completed();r.roll(s2,{names:[]},()=>.999);r.enrich(s2);context.zone244Claim(s2);
 assert.equal(s2.reward.firstCompletion,false);assert.equal(context.state.xp,165+85);
 assert.equal(ups,2);
-const html=fs.readFileSync(root+'/index.html','utf8');assert(html.includes('Build 246'));
+const html=fs.readFileSync(root+'/index.html','utf8');assert(html.includes('Build 247'));
 assert(game.includes('window.AshenZone244Rewards.enrich(session)'));
 assert(game.includes('data-zone-reward-test-246'));assert(game.includes('zone246StartRewardTest()'));assert(game.includes("reward-test-unlock-246"));
 console.log('PASS 246: existing resources, scene rewards, combat XP, first-time bonus, idempotent claims, no test rewards');

@@ -3096,10 +3096,33 @@ function changeSocketArtifact(uid,value,mode){
   message=mode==='install'?'Osadzono posiadany artefakt.':'Wyjęty artefakt wrócił do magazynu.';
  }catch(err){inst.socketedArtifacts=previousSockets;inst.socketArtifactUids=previousUids;if(token)token.socketItemUid=prevOwner;throw err;}
 }
+function artifactFamilyProgressPanel(){
+ const catalog=window.Ashen060Catalog?.artifact_effects||[];
+ const families=[...new Set(catalog.map(x=>x.family))];
+ const stock=state.artifactStock||[];
+ const present=new Set(stock.filter(x=>x&&x.name).map(x=>artifactCatalogName(x.name)||x.name));
+ const wornItemIds=new Set(Object.values(state.equip||{}).filter(Boolean));
+ const wornNames=new Map();
+ for(const a of stock){
+  if(!a?.socketItemUid||!wornItemIds.has(a.socketItemUid))continue;
+  const name=artifactCatalogName(a.name);if(!name)continue;
+  const family=catalog.find(e=>e.artifact===name)?.family;if(!family)continue;
+  if(!wornNames.has(family))wornNames.set(family,new Set());
+  wornNames.get(family).add(name);
+ }
+ const html=families.map(family=>{
+  const names=[...new Set(catalog.filter(x=>x.family===family).map(x=>x.artifact))];
+  const owned=names.filter(name=>present.has(name)).length,active=wornNames.get(family)?.size||0;
+  const tier=active>=6?'3/6 i 6/6':active>=3?'3/6':'brak';
+  const labels=names.map(name=>`<span class="${present.has(name)?'good':'muted'}">${present.has(name)?'◆':'◇'} ${escape(name)}</span>`).join(' · ');
+  return `<div class="ashen-socket-lab-row" style="display:block"><strong>${escape(family)}</strong> · kolekcja ${owned}/6 · osadzone w założonym ekwipunku: ${active}/6 · rezonans: ${tier}<p class="small muted">${labels}</p></div>`;
+ }).join('');
+ return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Premie rezonansu wymagają jeszcze zatwierdzenia balansu.</p>${html}</details>`;
+}
 function artifactStockPanel(){
  const stock=state.artifactStock||[],free=stock.filter(x=>!x.socketItemUid),used=stock.length-free.length;
  const entries=stock.map(x=>`<div class="ashen-socket-lab-row"><span>✧ ${escape(x.name)}${x.legacyItem?' · archiwalny egzemplarz':''}</span><span class="small muted">${x.socketItemUid?'Osadzony':artifactCatalogName(x.name)?'Gotowy do osadzenia':'Zachowany · oczekuje na zgodny efekt'}</span></div>`).join('');
- return `<section class="panel section" aria-label="Magazyn artefaktów"><h3>✧ Magazyn artefaktów</h3><p class="small muted">Posiadane: ${stock.length} · wolne: ${free.length} · osadzone: ${used}. Stare egzemplarze zachowują pełne dane, ale bez zgodnego efektu nie można ich automatycznie osadzić. Rezonans starych akcesoriów wymaga osobnego przeniesienia do gniazd.</p>${entries||'<p class="muted small">Magazyn jest pusty. Nowe artefakty będą znajdowane w Strefie Anomalii. Nadal dostępny jest jednorazowy pakiet testowy.</p>'}<div class="actions"><button data-artifact-test-pack ${state.artifactTestPack237?'disabled':''}>Przydziel 3 artefakty testowe (jednorazowo)</button></div></section>`;
+ return `<section class="panel section" aria-label="Magazyn artefaktów"><h3>✧ Magazyn artefaktów</h3><p class="small muted">Posiadane: ${stock.length} · wolne: ${free.length} · osadzone: ${used}. Stare egzemplarze zachowują pełne dane, ale bez zgodnego efektu nie można ich automatycznie osadzić. Rezonans starych akcesoriów wymaga osobnego przeniesienia do gniazd.</p>${entries||'<p class="muted small">Magazyn jest pusty. Nowe artefakty będą znajdowane w Strefie Anomalii. Nadal dostępny jest jednorazowy pakiet testowy.</p>'}${artifactFamilyProgressPanel()}<div class="actions"><button data-artifact-test-pack ${state.artifactTestPack237?'disabled':''}>Przydziel 3 artefakty testowe (jednorazowo)</button></div></section>`;
 }
 function grantArtifactTestPack(){
  if(state.artifactTestPack237)throw Error('Próbny przydział został już wykorzystany.');

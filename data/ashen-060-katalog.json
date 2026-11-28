@@ -1,6 +1,6 @@
 {
   "format_version": "0.6.0-design-stage-6",
-  "status": "PROJEKT; NIE WDROŻONO",
+  "status": "KATALOG 48 ARTEFAKTÓW — nowe efekty robocze do balansu; starych 16 nie zmieniono",
   "source": "ASHEN 060 etap 4, katalogi CSV",
   "modifier_keys_encountered": [
     "PD wypraw %",
@@ -1255,6 +1255,2055 @@
       "key": "PŻ",
       "value": "4",
       "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "broń",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "kurtka",
+      "key": "pancerz",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "koszulka",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "spodnie",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "buty",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "nakrycie głowy",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "rękawice",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Pancerz Zmierzchu",
+      "slot_category": "akcesorium",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "broń",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "kurtka",
+      "key": "PŻ",
+      "value": "7",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "koszulka",
+      "key": "PŻ",
+      "value": "5",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "spodnie",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "buty",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "nakrycie głowy",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "rękawice",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Serce Schronienia",
+      "slot_category": "akcesorium",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "broń",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "kurtka",
+      "key": "wytrzymałość",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "koszulka",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "spodnie",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "buty",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "nakrycie głowy",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "rękawice",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Węzeł Oporu",
+      "slot_category": "akcesorium",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "broń",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "kurtka",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "koszulka",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "spodnie",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "buty",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "nakrycie głowy",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "rękawice",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Osłonowy",
+      "artifact": "Kamień Ostatniej Linii",
+      "slot_category": "akcesorium",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "broń",
+      "key": "obrażenia %",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "kurtka",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "koszulka",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "spodnie",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "buty",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "nakrycie głowy",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "rękawice",
+      "key": "obrażenia %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Kieł Spopielenia",
+      "slot_category": "akcesorium",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "broń",
+      "key": "przebicie",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "kurtka",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "koszulka",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "spodnie",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "buty",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "nakrycie głowy",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "rękawice",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Odprysk Rozłamu",
+      "slot_category": "akcesorium",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "broń",
+      "key": "obrażenia %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "kurtka",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "koszulka",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "spodnie",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "buty",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "nakrycie głowy",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "rękawice",
+      "key": "obrażenia %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Serce Rozbicia",
+      "slot_category": "akcesorium",
+      "key": "obrażenia %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Niszczycielski",
+      "artifact": "Zadra Niszczyciela",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Źrenica Pustkowia",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "broń",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "kurtka",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "koszulka",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "spodnie",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "buty",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "nakrycie głowy",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "rękawice",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Żeton Cichego Strzału",
+      "slot_category": "akcesorium",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Okruch Dalszego Wzroku",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "broń",
+      "key": "unik pkt",
+      "value": "0.4",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "kurtka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "koszulka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "spodnie",
+      "key": "unik pkt",
+      "value": "0.6",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "buty",
+      "key": "unik pkt",
+      "value": "0.6",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "nakrycie głowy",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "rękawice",
+      "key": "unik pkt",
+      "value": "0.4",
+      "condition": ""
+    },
+    {
+      "family": "Tropicielski",
+      "artifact": "Nawigator Cienia",
+      "slot_category": "akcesorium",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "broń",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "kurtka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "koszulka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "spodnie",
+      "key": "unik pkt",
+      "value": "0.8",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "buty",
+      "key": "unik pkt",
+      "value": "0.8",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "nakrycie głowy",
+      "key": "unik pkt",
+      "value": "0.4",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "rękawice",
+      "key": "unik pkt",
+      "value": "0.4",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Splot Błyskawicy",
+      "slot_category": "akcesorium",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Puls Drżącej Ziemi",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "broń",
+      "key": "unik pkt",
+      "value": "0.4",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "kurtka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "koszulka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "spodnie",
+      "key": "unik pkt",
+      "value": "0.6",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "buty",
+      "key": "unik pkt",
+      "value": "0.8",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "nakrycie głowy",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "rękawice",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Włókno Odskoku",
+      "slot_category": "akcesorium",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "broń",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "kurtka",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "koszulka",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "spodnie",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "buty",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "nakrycie głowy",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "rękawice",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Refleksyjny",
+      "artifact": "Echo Kroku",
+      "slot_category": "akcesorium",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "broń",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "kurtka",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "koszulka",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "spodnie",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "buty",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "nakrycie głowy",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "rękawice",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Śruba Twardziela",
+      "slot_category": "akcesorium",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "broń",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "kurtka",
+      "key": "PŻ",
+      "value": "6",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "koszulka",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "spodnie",
+      "key": "PŻ",
+      "value": "5",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "buty",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "nakrycie głowy",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "rękawice",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Bryła Rdzawej Krwi",
+      "slot_category": "akcesorium",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "broń",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "kurtka",
+      "key": "wytrzymałość",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "koszulka",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "spodnie",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "buty",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "nakrycie głowy",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "rękawice",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Pieczęć Kowadła",
+      "slot_category": "akcesorium",
+      "key": "wytrzymałość",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "broń",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "kurtka",
+      "key": "pancerz",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "koszulka",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "spodnie",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "buty",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "nakrycie głowy",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "rękawice",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Żelazny",
+      "artifact": "Żebro Kolosa",
+      "slot_category": "akcesorium",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Styk Polaryzacji",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "broń",
+      "key": "przebicie",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "kurtka",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "koszulka",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "spodnie",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "buty",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "nakrycie głowy",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "rękawice",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Rdzeń Namierzania",
+      "slot_category": "akcesorium",
+      "key": "przebicie",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Drut Przewodnika",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "broń",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "kurtka",
+      "key": "pancerz",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "koszulka",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "spodnie",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "buty",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "nakrycie głowy",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "rękawice",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Techniczny",
+      "artifact": "Płytka Korektora",
+      "slot_category": "akcesorium",
+      "key": "pancerz",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "broń",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "kurtka",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "koszulka",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "spodnie",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "buty",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "nakrycie głowy",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "rękawice",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Popiół Wędrowca",
+      "slot_category": "akcesorium",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "broń",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "kurtka",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "koszulka",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "spodnie",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "buty",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "nakrycie głowy",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "rękawice",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Kropla Długiej Drogi",
+      "slot_category": "akcesorium",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "broń",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "kurtka",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "koszulka",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "spodnie",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "buty",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "nakrycie głowy",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "rękawice",
+      "key": "surowce %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Sól Martwych Szlaków",
+      "slot_category": "akcesorium",
+      "key": "surowce %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "broń",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "kurtka",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "koszulka",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "spodnie",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "buty",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "nakrycie głowy",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "rękawice",
+      "key": "PD wypraw %",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Nomadyczny",
+      "artifact": "Znak Karawany",
+      "slot_category": "akcesorium",
+      "key": "PD wypraw %",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "broń",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "kurtka",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "koszulka",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "spodnie",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "buty",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "nakrycie głowy",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "rękawice",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szkło Odwróconego Nieba",
+      "slot_category": "akcesorium",
+      "key": "krytyk pp",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "broń",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "kurtka",
+      "key": "PŻ",
+      "value": "6",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "koszulka",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "spodnie",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "buty",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "nakrycie głowy",
+      "key": "PŻ",
+      "value": "3",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "rękawice",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Szept Pustej Częstotliwości",
+      "slot_category": "akcesorium",
+      "key": "PŻ",
+      "value": "4",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "broń",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "kurtka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "koszulka",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "spodnie",
+      "key": "unik pkt",
+      "value": "0.6",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "buty",
+      "key": "unik pkt",
+      "value": "0.6",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "nakrycie głowy",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "rękawice",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Krąg Nieruchomego Czasu",
+      "slot_category": "akcesorium",
+      "key": "unik pkt",
+      "value": "0.5",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "broń",
+      "key": "celność",
+      "value": "2",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "kurtka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "koszulka",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "spodnie",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "buty",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "nakrycie głowy",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "rękawice",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
+    },
+    {
+      "family": "Anomalny",
+      "artifact": "Łza Burzowego Serca",
+      "slot_category": "akcesorium",
+      "key": "celność",
+      "value": "1",
+      "condition": ""
     }
-  ]
+  ],
+  "artifact_catalog_build": 247
 }
