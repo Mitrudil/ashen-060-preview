@@ -1499,3 +1499,12 @@ body.arena-report-modal-open{overflow:hidden}
 .ashen-socket-names{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .ashen-socket-name{font-size:11px;color:#f1ddbc;border:1px solid #6d5940;padding:4px 7px;border-radius:6px;background:#1a2228}
 @media(max-width:620px){.ashen-socket-icons .ashen-socket-symbol{width:40px;height:40px;font-size:23px}.ashen-socket-showcase{padding:9px}}
+
+/* ASHEN 234 — faktycznie aktywne premie zestawow */
+.ashen-set-actual-summary{margin:16px 0;padding:16px;background:var(--panel2,#202833);border:1px solid var(--line,#394655);border-radius:12px}
+.ashen-set-actual-summary h3{margin:0 0 10px;color:var(--gold,#d6ad70)}
+.ashen-set-actual-members{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:12px 0}
+.ashen-set-actual-members .ashen-set-member{display:flex;flex-direction:column;gap:4px;padding:9px;border:1px solid var(--line,#394655);border-radius:8px}
+.ashen-set-actual-members .ashen-set-member span{font-size:.82rem;color:var(--muted,#a1aab2)}
+.ashen-set-effect-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.ashen-set-effect-chip{padding:5px 9px;border:1px solid #806c45;border-radius:7px;background:rgba(150,121,63,.12);color:var(--txt,#e6e8e7);font-size:.85rem}
