@@ -9,7 +9,7 @@ for(let choice=0;choice<3;choice++){
  assert.equal(s.status,'finished');assert.equal(h.option,choice);assert(h.artifactSignal.detected===true);
  assert(h.artifactSignal.chanceAtDecision>.0);assert(h.artifactSignal.chanceAtDecision<1);
  assert(z.ending(s).text.includes('wykrył możliwy ślad'));
- assert(z.html(s).includes('Nie przyznano przedmiotu'));
+ assert(z.html(s).includes('Archiwalna przygoda sprzed nagród Build 244'));
  const restored=JSON.parse(JSON.stringify(s));assert.equal(restored.history[4].artifactSignal.detected,true);
  assert.throws(()=>z.pick(restored,choice,stats,()=>1));
  const loss=ready(false);z.pick(loss,choice,stats,()=>.999);assert.equal(loss.history[4].artifactSignal.detected,false);
@@ -17,5 +17,5 @@ for(let choice=0;choice<3;choice++){
 }
 assert(!z.scenes[4].choices[0][0].includes('wydobyć przedmiot'));
 const h=fs.readFileSync(path.join(base,'index.html'),'utf8');
-assert(h.includes('Build 243'));assert(h.includes('ashen-zone-239.js?v=243'));
+assert(h.includes('Build 244'));assert(h.includes('ashen-zone-239.js?v=244'));
 console.log('PASS 241: all 3 final choices can reveal artifact signal; fail result possible; no loot; persisted; no rerolls');

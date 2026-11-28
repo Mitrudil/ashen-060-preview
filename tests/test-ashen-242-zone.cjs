@@ -21,6 +21,6 @@ const save=JSON.parse(JSON.stringify(s));assert.equal(save.finishedAt,t);assert.
 const g=fs.readFileSync(path.join(root,'js/game.js'),'utf8');
 assert(g.includes('window.AshenZone239.resonator(current).ready'));
 assert(g.includes("function updateZoneResonator()"));
-assert(g.includes("localStorage.removeItem(zone239StorageKey())"));
-const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert(h.includes('Build 243'));assert(h.includes('ashen-zone-239.js?v=243'));
+assert(g.includes("zone239Write(window.AshenZone239.initial({testMode:true"));
+const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert(h.includes('Build 244'));assert(h.includes('ashen-zone-239.js?v=244'));
 console.log('PASS 242: 72h after finish, session-level countdown, no early start, test replay, persisted timestamps, UI and integration');
