@@ -20,5 +20,5 @@ assert(code.includes('if(r.ready){render();return}'));
 assert(code.includes('setInterval(()=>{updateZoneResonator();'));
 assert(!code.includes("b.hasAttribute('data-zone-refresh')"));
 assert(!fs.readFileSync(path.join(root,'js/ashen-zone-239.js'),'utf8').includes('data-zone-refresh'));
-assert(fs.readFileSync(path.join(root,'index.html'),'utf8').includes('Build 244'));
+assert(fs.readFileSync(path.join(root,'index.html'),'utf8').includes('Build 245'));
 console.log('PASS 243: cooldown 72h, auto-ready, auto-tick, no refresh button');

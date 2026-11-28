@@ -4187,6 +4187,18 @@ if(arenaReportPosition&&page==='arena'&&arenaReportOpen===arenaReportPosition.re
  }
  if(window.scrollY!==arenaReportPosition.page)window.scrollTo(0,arenaReportPosition.page);
 }
+// Build 245: opcja widoczna tylko dla ukonczonej historii w czasie cooldownu.
+if(page==='zone'&&zone245CanRewardTest()){
+ const doneSection=document.querySelector('.ashen-zone-239');
+ const testDetails=doneSection?.querySelector('.ashen-zone-resonator');
+ if(testDetails){
+  const p=document.createElement('p');p.className='small muted';
+  p.textContent='Jednorazowe wejscie do sprawdzenia nagrod Build 244/245. To normalna przygoda z prawdziwym losowaniem, niezalezna od przycisku powtorki bez nagrod. Po zakonczeniu ruszy 72-godzinny licznik.';
+  const b=document.createElement('button');b.type='button';b.setAttribute('data-zone-reward-test','1');
+  b.textContent='Testuj nagrody teraz (jednorazowo)';
+  testDetails.insertAdjacentElement('afterend',p);p.insertAdjacentElement('afterend',b);
+ }
+}
 const preview060Restored=document.querySelector('.ashen-060-in-item');
 if(preview060WasOpen&&preview060Restored)preview060Restored.open=true;
 const preview060RestoredDialog=document.querySelector('.ashen-item-modal');
@@ -4195,6 +4207,26 @@ let c=$('countdown');if(c)c.textContent=Math.max(0,Math.ceil((state.mission?.end
 // Testowa opowieść przechowywana osobno, wyłącznie lokalnie — bez synchronizacji chmury.
 function zone239StorageKey(){return KEY+':zone239:'+devActiveId()}
 function zone239Read(){try{const x=localStorage.getItem(zone239StorageKey());return x?JSON.parse(x):null}catch{return null}}
+// Build 245: jednorazowe wejscie testowe Z NAGRODAMI po wprowadzeniu Build 244.
+// Oddzielne od zwyklego cooldownu i testowych powtorek bez nagrod.
+function zone245UnlockKey(){return zone239StorageKey()+':reward-test-unlock-245'}
+function zone245CanRewardTest(){
+ const run=zone239Read();
+ return !!run&&run.status==='finished'&&!window.AshenZone239.resonator(run).ready&&!localStorage.getItem(zone245UnlockKey());
+}
+function zone245StartRewardTest(){
+ if(!zone245CanRewardTest())throw Error('Jednorazowy test nagrod jest juz wykorzystany albo niedostepny.');
+ if(state.mission)throw Error('Nie mozna wejsc do Strefy podczas wyprawy.');
+ const previous=zone239Read();
+ if(previous?.reward&&!previous.rewardClaimed)zone244Claim(previous);
+ const key=zone245UnlockKey(), value='used';
+ // Najpierw zapisujemy prawo do jednorazowej proby, potem sesje.
+ localStorage.setItem(key,value);
+ if(localStorage.getItem(key)!==value)throw Error('Nie mozna zapisac zuzycia testowego wejscia.');
+ try {zone239Write(window.AshenZone239.initial({luck:explorationStats().luck}));}
+ catch(err){localStorage.removeItem(key);throw err;}
+}
+
 function zone239Write(x){const key=zone239StorageKey();const str=JSON.stringify(x);localStorage.setItem(key,str);if(localStorage.getItem(key)!==str)throw Error('Nie udało się potwierdzić zapisu sceny Strefy.')}
 // Build 244: rozliczenie tylko raz. Idempotencja w tym samym zapisie co magazyn i zlom.
 // Po awarii pomiedzy zapisem wyniku a nadaniem nagrody mozna bezpiecznie wznowic.
@@ -4247,6 +4279,7 @@ function updateZoneResonator(){
 }
 
 function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-zone-start')){try{const current=zone239Read();if(!current||window.AshenZone239.resonator(current).ready)zone239Write(window.AshenZone239.initial({luck:explorationStats().luck}));else throw Error('Rezonator nadal się regeneruje lub przygoda trwa.');render()}catch(err){message=err.message;render()}return}
+if(b.hasAttribute('data-zone-reward-test')){try{zone245StartRewardTest();render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie można testować Strefy podczas wyprawy.');const session=zone239Read();window.AshenZone239.pick(session,Number(b.dataset.zoneChoice),attrs());if(session.status==='finished'&&session.rewardSystemVersion===244&&!session.testMode){const catalog=window.Ashen060Catalog?.artifact_effects||[];const names=[...new Set(catalog.map(x=>x.artifact).filter(Boolean))];window.AshenZone244Rewards.roll(session,{names});}zone239Write(session);if(session.reward)zone244Claim(session);render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-fight')){try{
  if(state.mission)throw Error('Nie można walczyć w Strefie podczas wyprawy.');
