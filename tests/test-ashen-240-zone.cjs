@@ -19,5 +19,5 @@ assert.throws(()=>z.pick(reckless,0,attrs));assert.throws(()=>z.setCombat(reckle
 const game=fs.readFileSync(path.join(base,'js/game.js'),'utf8');const html=fs.readFileSync(path.join(base,'index.html'),'utf8');
 assert(game.includes('window.AshenZone239.encounter(session)'));
 assert(game.includes('const report=fight(enemy,{combat060:true,recordRounds:true});'));
-assert(html.includes('Build 250'));assert(html.includes('ashen-zone-239.js?v=250'));
+assert(html.includes('Build 251'));assert(html.includes('ashen-zone-239.js?v=251'));
 console.log('PASS 240: rozne efekty decyzji, warianty trudnosci walki, epilogi, trwały zapis, brak ponownego losowania');

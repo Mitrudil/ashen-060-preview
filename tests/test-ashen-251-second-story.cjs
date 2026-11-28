@@ -1,0 +1,26 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');
+const base=__dirname+'/..',ctx={window:{},Date,Math};
+for(const f of ['js/ashen-zone-239.js','js/ashen-zone-244-rewards.js'])vm.runInNewContext(fs.readFileSync(base+'/'+f,'utf8'),ctx);
+const z=ctx.window.AshenZone239,r=ctx.window.AshenZone244Rewards;
+assert.equal(z.otherStory.scenes.length,5);
+assert.equal(z.otherStory.scenes.every(x=>x.text.length>=2&&x.choices.length===3&&x.choices.every(c=>c.length===4)),true);
+assert(z.html(null).includes('data-zone-start="dom-pod-korzeniami"'));
+assert(z.html(null).includes('data-zone-start="ostatni-sygnal"'));
+const original=z.initial();assert.equal(original.story,'ostatni-sygnal');
+const s=z.initial({story:'dom-pod-korzeniami',luck:6});assert.equal(s.story,'dom-pod-korzeniami');
+assert(z.html(s).includes('Okno pośród pni'));assert(z.html(s).includes('Dom pod korzeniami'));
+for(let i=0;i<4;i++){const out=z.pick(s,i%3,{per:15,dex:15,int:15,end:15},()=>0);assert(out.good);assert.equal(s.scene,i+1)}
+assert.equal(s.status,'combat_pending');assert(z.encounter(s).name.match(/Ogrodnik|Strażnik|Opiekun/));
+assert.throws(()=>z.pick(s,0,{},()=>0));z.setCombat(s,{won:true,enemy:'Ogrodnik bez twarzy',lines:['Walka']});
+assert.equal(s.status,'playing');z.pick(s,1,{per:15,dex:15,int:15,end:15},()=>0);
+assert.equal(s.status,'finished');assert.equal(s.history.length,5);assert(z.ending(s).title.includes('Dziennik'));
+assert(z.html(s).includes('Dom pod korzeniami'));assert(z.html(s).includes('Wybierz następną historię')===false);
+const reward=r.roll(s,{names:['Echo Burzy']},()=>.999);r.enrich(s);assert(reward.source.includes('Dom pod korzeniami'));assert.equal(reward.sceneFinds.length,5);
+const before=JSON.stringify(s.reward);assert.equal(JSON.stringify(r.enrich(s)),before);
+assert(z.html(s).includes('Dom pod korzeniami'));
+const game=fs.readFileSync(base+'/js/game.js','utf8');
+assert(game.includes("const storyId='martwy-las:'+(session.story==='dom-pod-korzeniami'"));
+assert(game.includes('function zone251CanTest()'));assert(game.includes('data-zone-test-251'));assert(game.includes('zone251StartTest()'));
+assert(game.includes('story:b.dataset.zoneStart'));
+const h=fs.readFileSync(base+'/index.html','utf8');assert(h.includes('Build 251'));
+console.log('PASS 251: two selectable stories; 5 scenes/15 decisions; mandatory fight; distinct endings and reward source; idempotent enrichment; separate first-completion key; cooldown test');

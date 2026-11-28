@@ -9,7 +9,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'js/ashen-zone-239.js'),'utf8'
 const zone=ctx.window.AshenZone239;
 assert.equal(zone.scenes.length,5);
 assert(zone.scenes.every(s=>s.choices.length===3&&s.text.length===2));
-assert(zone.html(null).includes('Rozpocznij historię'));
+assert(zone.html(null).includes('Dom pod korzeniami'));
 let session=zone.initial();
 const attrs={per:16,dex:18,end:15,int:12};
 for(let scene=0;scene<4;scene++){
@@ -37,6 +37,6 @@ assert(game.includes("['zone','◈ Strefa Anomalii']"));
 assert(game.includes("zone:()=>window.AshenZone239?.html(zone244Reconcile())"));
 assert(game.includes('const artifactFind=null;'));
 assert(!game.includes('rollExpeditionArtifact(loc)'));
-assert(html.includes('ashen-zone-239.js?v=250'));
-assert(html.indexOf('ashen-zone-239.js?v=250')<html.indexOf('game.js?v=250'));
+assert(html.includes('ashen-zone-239.js?v=251'));
+assert(html.indexOf('ashen-zone-239.js?v=251')<html.indexOf('game.js?v=251'));
 console.log('PASS ASHEN 239: 5 scen, 15 opcji, save/reload, jeden raport walki, bez duplikacji losowania, artefakty poza zwykłymi wyprawami');

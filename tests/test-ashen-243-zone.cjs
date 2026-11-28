@@ -12,7 +12,7 @@ assert.equal(z.cooldownLabel(0),'0 d 0 godz. 0 min');
 const html=z.html({...finished,history:[{option:0,text:'',good:true},{option:0,text:'',good:true},{option:0,text:'',good:true},{option:0,text:'',good:true},{option:0,text:'',good:true}],combat:null});
 // Old timestamps are ready. The final screen offers a new adventure, not another cooldown.
 assert(html.includes('REZONATOR · GOTOWY'));
-assert(html.includes('data-zone-start="1"'));
+assert(html.includes('data-zone-start="ostatni-sygnal"'));
 assert(!html.includes('Odśwież stan Rezonatora'));
 const code=fs.readFileSync(path.join(root,'js/game.js'),'utf8');
 assert(code.includes('function updateZoneResonator()'));
@@ -20,5 +20,5 @@ assert(code.includes('if(r.ready){render();return}'));
 assert(code.includes('setInterval(()=>{updateZoneResonator();'));
 assert(!code.includes("b.hasAttribute('data-zone-refresh')"));
 assert(!fs.readFileSync(path.join(root,'js/ashen-zone-239.js'),'utf8').includes('data-zone-refresh'));
-assert(fs.readFileSync(path.join(root,'index.html'),'utf8').includes('Build 250'));
+assert(fs.readFileSync(path.join(root,'index.html'),'utf8').includes('Build 251'));
 console.log('PASS 243: cooldown 72h, auto-ready, auto-tick, no refresh button');
