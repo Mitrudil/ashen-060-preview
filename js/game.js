@@ -3116,10 +3116,15 @@ function artifactFamilyProgressPanel(){
   const tier=active>=6?'3/6 i 6/6':active>=3?'3/6':'brak';
   const labels=names.map(name=>`<span class="${present.has(name)?'good':'muted'}">${present.has(name)?'◆':'◇'} ${escape(name)}</span>`).join(' · ');
   const plan=window.Ashen248FamilyDesign?.[family];
-  const overview=plan?`<p class="small"><strong>Specjalizacja (propozycja): ${escape(plan.specialization)}</strong> — ${escape(plan.description)}</p><p class="small muted">3/6: ${escape(plan.tier3)} · 6/6: ${escape(plan.tier6)}. Premie nieaktywne — przed wdrożeniem wymagają zatwierdzenia i balansu.</p>`:'';
+  const simulator=window.Ashen249Resonance;
+  const numeric=simulator?.catalog?.[family];
+  const proposal=numeric?`<p class="small muted"><strong>Proponowane wartości (nieaktywne w walce):</strong> 3/6 — ${numeric.at3.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}; 6/6 — ${numeric.at6.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. Progi są łączne, NIE sumują się.</p>`:'';
+  const calculated=simulator?simulator.evaluate(family,[...(wornNames.get(family)||[])]) : null;
+  const current=calculated?.tier?`<p class="small"><strong>Symulacja aktualnego wyposażenia:</strong> próg ${calculated.tier}/6 → ${calculated.bonuses.map(v=>`${escape(v.stat)} +${v.value}${escape(v.unit)}`).join(' · ')}. Tylko podgląd; premię dla broni uzależnimy od jej rodzaju.</p>`:'';
+  const overview=plan?`<p class="small"><strong>Specjalizacja: ${escape(plan.specialization)}</strong> — ${escape(plan.description)}</p>${proposal}${current}`:'';
   return `<div class="ashen-socket-lab-row" style="display:block"><strong>${escape(family)}</strong> · kolekcja ${owned}/6 · osadzone w założonym ekwipunku: ${active}/6 · rezonans: ${tier}${overview}<p class="small muted">${labels}</p></div>`;
  }).join('');
- return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Premie rezonansu wymagają jeszcze zatwierdzenia balansu.</p>${html}</details>`;
+ return `<details class="ashen-060-in-item" style="margin:12px 0"><summary><strong>◈ Kolekcja artefaktów — 8 rodzin / 48 artefaktów</strong></summary><p class="small muted">Każdy z 48 artefaktów ma unikatową nazwę i rodzinę. Progi rezonansu: 3 i 6 różnych rodzajów tej samej rodziny osadzonych w aktualnie założonym wyposażeniu. Wartości rezonansu są symulowane — nie są jeszcze naliczane do walki ani łupów.</p>${html}</details>`;
 }
 function artifactStockPanel(){
  const stock=state.artifactStock||[],free=stock.filter(x=>!x.socketItemUid),used=stock.length-free.length;
