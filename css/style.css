@@ -1511,3 +1511,6 @@ body.arena-report-modal-open{overflow:hidden}
 
 /* ASHEN 236: testowe operacje na gniazdach */
 .ashen-socket-lab{margin-top:12px;padding:12px;border:1px solid var(--line,#34404a);border-radius:10px}.ashen-socket-lab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0}.ashen-socket-lab-row button{flex-shrink:0}
+
+/* ASHEN 239 — Strefa Anomalii */
+.ashen-zone-239 .ashen-zone-steps{display:flex;gap:7px;margin:17px 0}.ashen-zone-239 .ashen-zone-step{height:7px;flex:1;background:#343a3b;border-radius:4px}.ashen-zone-239 .ashen-zone-step.done{background:#a7773e}.ashen-zone-239 .ashen-zone-step.current{background:#d6b36c}.ashen-zone-239 .ashen-zone-narrative{background:linear-gradient(125deg,rgba(17,26,25,.96),rgba(40,34,27,.91));border-left:3px solid #a87a3f}.ashen-zone-239 .ashen-zone-narrative p{line-height:1.75;max-width:77ch}.ashen-zone-239 .ashen-zone-choices{display:grid;gap:9px}.ashen-zone-239 .ashen-zone-choices button{text-align:left;white-space:normal;line-height:1.5;padding:13px 15px}.ashen-zone-239 .ashen-zone-choices button:hover{border-color:#b4884c}.ashen-zone-239 details{margin:10px 0}.ashen-zone-239 .report{margin:5px 0}
