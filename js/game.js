@@ -4196,6 +4196,23 @@ let c=$('countdown');if(c)c.textContent=Math.max(0,Math.ceil((state.mission?.end
 function zone239StorageKey(){return KEY+':zone239:'+devActiveId()}
 function zone239Read(){try{const x=localStorage.getItem(zone239StorageKey());return x?JSON.parse(x):null}catch{return null}}
 function zone239Write(x){const key=zone239StorageKey();const str=JSON.stringify(x);localStorage.setItem(key,str);if(localStorage.getItem(key)!==str)throw Error('Nie udało się potwierdzić zapisu sceny Strefy.')}
+// Build 243 — licznik Rezonatora aktualizuje sie bez przeladowania widoku.
+// Po uplywie 72 h pokazujemy stan GOTOWY automatycznie, nie zaczynamy kolejnego odliczania.
+function updateZoneResonator(){
+ if(page!=='zone'||!window.AshenZone239)return;
+ const panel=document.querySelector('[data-resonator-regenerating="1"]');
+ if(!panel)return;
+ const session=zone239Read(),r=window.AshenZone239.resonator(session);
+ if(r.ready){render();return}
+ if(r.active)return;
+ const remaining=panel.querySelector('.ashen-zone-remaining');
+ if(remaining)remaining.textContent='Pozostało: '+window.AshenZone239.cooldownLabel(r.remaining);
+ const pct=Math.max(0,Math.min(100,Math.floor((1-r.remaining/window.AshenZone239.RESONATOR_COOLDOWN_MS)*100)));
+ const bar=panel.querySelector('.ashen-zone-recharge');
+ if(bar)bar.setAttribute('aria-valuenow',String(pct));
+ const fill=bar?.querySelector('span');if(fill)fill.style.width=pct+'%';
+}
+
 function act(e){if(e.target?.matches?.('.ashen-item-overlay')){openItemDetail=null;itemCompareSlot=null;render();return}if(e.target.closest?.('[data-zlab-other-test]')){try{zLabOtherMasteryTest(e.target.closest('[data-zlab-other-test]').dataset.zlabOtherTest)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-warden-test]')){try{zLabWardenTest()}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-generate]')){try{const family=$('zlab-family')?.value;const qualities=[0,1,2].map(i=>Number($('zlab-quality-'+i)?.value));zLabGenerate(family,qualities)}catch(err){message=err.message;render()}return}if(e.target.closest?.('[data-zlab-restore]')){try{zLabRestore()}catch(err){message=err.message;render()}return}if(e.target?.matches?.('[data-arena-overlay]')){arenaReportOpen=null;render();return}let b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-zone-start')){try{const current=zone239Read();if(!current||window.AshenZone239.resonator(current).ready)zone239Write(window.AshenZone239.initial());else throw Error('Rezonator nadal się regeneruje lub przygoda trwa.');render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-choice')){try{if(state.mission)throw Error('Nie można testować Strefy podczas wyprawy.');const session=zone239Read();window.AshenZone239.pick(session,Number(b.dataset.zoneChoice),attrs());zone239Write(session);render()}catch(err){message=err.message;render()}return}
 if(b.hasAttribute('data-zone-fight')){try{
@@ -4209,7 +4226,6 @@ if(b.hasAttribute('data-zone-fight')){try{
  const report=fight(enemy,{combat060:true,recordRounds:true});
  window.AshenZone239.setCombat(session,{...report,enemy:enemy.name,advantage:event.advantage});zone239Write(session);render();
  }catch(err){message=err.message;render()}return}
-if(b.hasAttribute('data-zone-refresh')){render();return}
 if(b.hasAttribute('data-zone-reset')){try{localStorage.removeItem(zone239StorageKey());render()}catch(err){message=err.message;render()}return}
 if(b.dataset.mailFolder){mailFolder=b.dataset.mailFolder;mailOpenedId=null;mailComposeTo=null;render();return}if(b.dataset.mailCompose){mailComposeTo='';mailOpenedId=null;render();return}if(b.dataset.mailCancel){mailComposeTo=null;render();return}if(b.dataset.mailOpen){mailOpen(b.dataset.mailOpen);return}if(b.dataset.mailBack){mailOpenedId=null;render();return}if(b.dataset.mailReply){mailComposeTo=b.dataset.mailReply;mailOpenedId=null;render();return}if(b.dataset.mailSend){try{mailSend($('mail-target')?.value,$('mail-body')?.value)}catch(err){message=err.message;render()}return}if(b.dataset.mailReport){setPage('pvp');message='Historyczne raporty offline nie są już obsługiwane. Nowe raporty znajdziesz w PvP online.';render();return}if(b.dataset.devPanel){devPanelOpen=!devPanelOpen;if(!devPanelOpen)devPendingResetId=null;render();return}if(b.dataset.devCreate){try{devCreateProfile()}catch(err){message=err.message;render()}return}if(b.dataset.devSwitch){try{devSwitch(b.dataset.devSwitch)}catch(err){message=err.message;render()}return}if(b.dataset.devDelete){try{devDeleteProfile(b.dataset.devDelete)}catch(err){message=err.message;render()}return}if(b.dataset.devResetCancel){devPendingResetId=null;render();return}if(b.dataset.devResetConfirm){try{devResetTestProfile(b.dataset.devResetConfirm)}catch(err){message=err.message;render()}return}if(b.dataset.devReset){try{devAskResetTestProfile(b.dataset.devReset)}catch(err){message=err.message;render()}return}if(b.hasAttribute('data-artifact-test-pack')){try{grantArtifactTestPack()}catch(err){message=err.message}render();return}if(b.hasAttribute('data-socket-install')||b.hasAttribute('data-socket-remove')){
  try{
@@ -4299,7 +4315,7 @@ document.addEventListener('change',e=>{if(e.target.closest?.('.weapon-lab-config
 window.ASHEN_OPEN_PLAYER=id=>{if(!state.created)return;void window.ASHEN_PLAYERS?.open?.(id)};
 window.ASHEN_OPEN_EXPEDITION_REPORT=id=>{if(!state.created)return;setPage('expeditions');render();void window.ASHEN_EXPEDITIONS?.openReport?.(id)};
 document.addEventListener('click',e=>{const summary=e.target.closest?.('.weapon-lab > summary');if(summary){weaponLabOpen=!summary.parentElement.open;weaponLabSave()}},true);
-document.addEventListener('click',act);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&arenaReportOpen!==null){arenaReportOpen=null;render()} });if(!state.created)setPage('character');render();setInterval(()=>{let prev=state.mission?.id;sync();if(prev&&!state.mission){setPage('missions');render();}else{let c=$('countdown');if(c&&state.mission)c.textContent=Math.max(0,Math.ceil((state.mission.ends-Date.now())/1000))+' s';let f=$('mission-progress-fill');if(f&&state.mission){const loc=locations.find(l=>l.id===state.mission.id)||locations[0];const duration=state.mission.durationMs||travelSeconds(loc)*1000;f.style.width=Math.max(0,Math.min(100,100*(1-(state.mission.ends-Date.now())/duration)))+'%'}}},1000);
+document.addEventListener('click',act);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&arenaReportOpen!==null){arenaReportOpen=null;render()} });if(!state.created)setPage('character');render();setInterval(()=>{updateZoneResonator();let prev=state.mission?.id;sync();if(prev&&!state.mission){setPage('missions');render();}else{let c=$('countdown');if(c&&state.mission)c.textContent=Math.max(0,Math.ceil((state.mission.ends-Date.now())/1000))+' s';let f=$('mission-progress-fill');if(f&&state.mission){const loc=locations.find(l=>l.id===state.mission.id)||locations[0];const duration=state.mission.durationMs||travelSeconds(loc)*1000;f.style.width=Math.max(0,Math.min(100,100*(1-(state.mission.ends-Date.now())/duration)))+'%'}}},1000);
 function positionPremiumTooltip(target){
  const icon=target?.closest?.('.ashen-mod-icon');if(!icon)return;
  const tip=icon.querySelector('.ashen-mod-tooltip');if(!tip)return;
